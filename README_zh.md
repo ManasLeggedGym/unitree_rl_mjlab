@@ -45,10 +45,22 @@ Mjlab 结合了 [Isaac Lab](https://github.com/isaac-sim/IsaacLab) 的成熟高�
 python scripts/train.py Mjlab-Velocity-Flat-Unitree-G1 --env.scene.num-envs=4096
 ```
 
+多 GPU 训练：使用 --gpu-ids 扩展到多块 GPU：
+
+```bash
+python scripts/train.py Mjlab-Velocity-Flat-Unitree-G1 \
+  --gpu-ids 0 1 \
+  --env.scene.num-envs=4096
+```
+
 - 第一个参数(如 Mjlab-Velocity-Flat-Unitree-G1)为必选参数，确定要启用的训练环境。可选：
   - Mjlab-Velocity-Flat-Unitree-Go2
   - Mjlab-Velocity-Flat-Unitree-G1
   - Mjlab-Velocity-Flat-Unitree-H1_2
+
+> [!NOTE]
+> 更多有关详细说明，请参阅 mjlab 文档
+> [mjlab documentation](https://mujocolab.github.io/mjlab/index.html).
 
 ### 2. 动作模仿训练
 

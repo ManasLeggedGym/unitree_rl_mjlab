@@ -46,11 +46,23 @@ Run the following command to train a velocity tracking policy:
 python scripts/train.py Mjlab-Velocity-Flat-Unitree-G1 --env.scene.num-envs=4096
 ```
 
+Multi-GPU Training: Scale to multiple GPUs using --gpu-ids:
+
+```bash
+python scripts/train.py Mjlab-Velocity-Flat-Unitree-G1 \
+  --gpu-ids 0 1 \
+  --env.scene.num-envs=4096
+```
+
 - The first argument (e.g., Mjlab-Velocity-Flat-Unitree-G1) specifies the training task.
 Available velocity tracking tasks:
   - Mjlab-Velocity-Flat-Unitree-Go2
   - Mjlab-Velocity-Flat-Unitree-G1
   - Mjlab-Velocity-Flat-Unitree-H1_2
+
+> [!NOTE]
+> For more details, refer to the mjlab documentation:
+> [mjlab documentation](https://mujocolab.github.io/mjlab/index.html).
 
 ### 2. Motion Imitation Training
 
