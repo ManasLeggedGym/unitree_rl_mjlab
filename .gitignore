@@ -1,0 +1,15 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+*.pyc
+*.pt
+# Virtual environments
+.venv
+
+#Checkpoints directory
+deploy/robots/go2/config/policy/velocity/*
+
