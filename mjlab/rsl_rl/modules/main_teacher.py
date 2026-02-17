@@ -74,10 +74,10 @@ class TeacherAgent:
         self.device = device
 
     def getAction(self, observations):
-        obs_tensor = torch.from_numpy(observations).to(self.device)
+        obs_tensor = torch.tensor(observations, dtype=torch.float32, device=self.device)
         with torch.no_grad():
-            actions = self.policy.act(obs_tensor)
-        return actions.cpu().numpy()
+            actions = self.policy.act(obs_tensor, deterministic=True)
+        return actions
 
 
 def getParser():
@@ -102,13 +102,16 @@ if __name__ == "__main__":
     args.n_steps_per_env = int(args.n_steps / args.n_envs)
 
     # check from obs space
-    args.proprio_obs_dim = 10 #100
-    args.extero_obs_dim = 20 #200
-    args.action_dim = 12
+    # args.proprio_obs_dim = 10 #100
+    # args.extero_obs_dim = 20 #200
+    # args.action_dim = 12
+
+    # args.action_dim = env.action_space.shape[0]
+    # args.n_envs = env.num_envs
 
     # config
-    with open("/media/ok/ubuntu/Quadruped_Projects/legged_rl/unitree_rl_mjlab/mjlab/rsl_rl/modules/config.yaml", "r") as f:
-        cfg = yaml.safe_load(f)
+    # with open("/media/ok/ubuntu/Quadruped_Projects/legged_rl/unitree_rl_mjlab/mjlab/rsl_rl/modules/config.yaml", "r") as f:
+    #     cfg = yaml.safe_load(f)
 
     # define teacher agent (pretrained)
     # teacher = TeacherAgent(args)
@@ -119,36 +122,32 @@ if __name__ == "__main__":
     #     agent_cfg=RslRlOnPolicyRunnerCfg,
     #     device="cuda"
     # )
+
+    task_id = "go2_velocity"
+
+    env_cfg = load_env_cfg(task_id)
+    agent_cfg = load_rl_cfg(task_id)
+
+    env=ManagerBasedRlEnv(env_cfg, device="cuda")
+
+    obs_dict, _ = env.reset()
+
+    args.action_dim = env.action_space.shape[0]
+    args.n_envs = env.num_envs
+    args.obs_dim = obs_dict["policy"].shape[-1]
+
+    with open("/media/ok/ubuntu/Quadruped_Projects/legged_rl/unitree_rl_mjlab/mjlab/rsl_rl/modules/config.yaml", "r") as f:
+        cfg = yaml.safe_load(f)
     
     teacher = TeacherAgent(
         checkpoint_path="/media/ok/ubuntu/Quadruped_Projects/legged_rl/unitree_rl_mjlab/logs/rsl_rl/go2_velocity/2026-02-10_22-25-08/model_10000.pt",
-        env=ManagerBasedRlEnv(ManagerBasedRlEnvCfg(), device="cuda"),
-        agent_cfg=RslRlOnPolicyRunnerCfg(),
+        env=env,
+        agent_cfg=agent_cfg,
         device="cuda"
     )
 
     # define student agent
     student = VisionStudentAgent(args, cfg["student_model"])
-    hidden_state_tensor = None
-    
-    cfg: TrainConfig
-    
-    cuda_visible = os.environ.get("CUDA_VISIBLE_DEVICES", "")
-    if cuda_visible == "":
-        device = "cpu"
-        seed = cfg.agent.seed
-        rank = 0
-    else:
-        local_rank = int(os.environ.get("LOCAL_RANK", "0"))
-        rank = int(os.environ.get("RANK", "0"))
-        os.environ["MUJOCO_EGL_DEVICE_ID"] = str(local_rank)
-        device = f"cuda:{local_rank}"
-        seed = cfg.agent.seed + local_rank
-
-    # define environment
-    env = ManagerBasedRlEnv(cfg=cfg, device=device, render_mode="rgb_array" if cfg.video else None)
-    
-    max_update = 10
 
     # for update in range(max_update):
     #     for _ in range(args.n_steps_per_env):
@@ -194,52 +193,47 @@ if __name__ == "__main__":
     #     print('{:<40} {:>6}'.format("action loss: ", '{:6.4f}'.format(action_loss)))
     #     print('----------------------------------------------------\n')    
 
-obs_dict, _ = env.reset()
+    # obs_dict, _ = env.reset()
 
-hidden_state_tensor = None
+    hidden_state = None
+    max_update = 10
 
-for update in range(max_update):
+    for update in range(max_update):
 
-    for _ in range(args.n_steps_per_env):
+        for _ in range(args.n_steps_per_env):
 
-        # Student sees policy obs
-        student_obs = obs_dict["policy"]
+            # Student sees policy obs
+            student_obs = obs_dict["policy"]
 
-        # Teacher sees privileged obs
-        teacher_obs = obs_dict["critic"]
+            # Teacher sees privileged obs
+            teacher_obs = obs_dict["critic"]
 
-        with torch.no_grad():
+            with torch.no_grad():
 
-            student_actions, hidden_state_tensor = student.getAction(
-                student_obs,
-                hidden_state_tensor
-            )
+                student_actions, hidden_state = student.getAction(
+                    student_obs,
+                    hidden_state
+                )
 
-            teacher_actions = teacher.getAction(teacher_obs)
+                teacher_actions = teacher.getAction(teacher_obs)
 
-        obs_dict, rewards, terminated, timeouts, _ = env.step(student_actions)
+            obs_dict, rewards, terminated, timeouts, _ = env.step(student_actions)
 
-        dones = torch.logical_or(terminated, timeouts)
+            dones = torch.logical_or(terminated, timeouts)
 
-        # reset hidden state where done
-        if hidden_state_tensor is not None:
-            hidden_state_tensor[:, dones] = 0.0
+            if hidden_state is not None:
+                hidden_state[:, dones, :] = 0.0
 
-        # store transition
-        student.step(
-            student_obs,
-            teacher_actions
-        )
+            student.step(student_obs, teacher_actions)
 
-    loss, reconstruction_loss, action_loss = student.train()
-    
-    if update % 5 == 0:
-        student.save(update)
+        loss, reconstruction_loss, action_loss = student.train()
+        
+        if update % 5 == 0:
+            student.save(update)
 
-    print('----------------------------------------------------')
-    print('{:>6}th iteration'.format(update))
-    print('{:<40} {:>6}'.format("total loss: ", '{:6.4f}'.format(loss)))
-    print('{:<40} {:>6}'.format("reconstruction loss: ", '{:6.4f}'.format(reconstruction_loss)))
-    print('{:<40} {:>6}'.format("action loss: ", '{:6.4f}'.format(action_loss)))
-    print('----------------------------------------------------\n')
-    
+        print('----------------------------------------------------')
+        print('{:>6}th iteration'.format(update))
+        print('{:<40} {:>6}'.format("total loss: ", '{:6.4f}'.format(loss)))
+        print('{:<40} {:>6}'.format("reconstruction loss: ", '{:6.4f}'.format(reconstruction_loss)))
+        print('{:<40} {:>6}'.format("action loss: ", '{:6.4f}'.format(action_loss)))
+        print('----------------------------------------------------\n')
