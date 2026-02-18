@@ -41,6 +41,7 @@ class ActorCritic(nn.Module):
         self.obs_groups = obs_groups
         num_actor_obs = 0
         for obs_group in obs_groups["policy"]:
+            print(f"Observation : {obs}")
             assert len(obs[obs_group].shape) == 2, "The ActorCritic module only supports 1D observations."
             num_actor_obs += obs[obs_group].shape[-1]
         num_critic_obs = 0
