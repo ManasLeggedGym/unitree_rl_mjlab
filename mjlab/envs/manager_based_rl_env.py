@@ -214,6 +214,10 @@ class ManagerBasedRlEnv:
   def num_envs(self) -> int:
     """Number of parallel environments."""
     return self.scene.num_envs
+  
+  @property
+  def num_actions(self) -> int:
+      return self.single_action_space.shape[0]
 
   @property
   def physics_dt(self) -> float:

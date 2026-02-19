@@ -1,10 +1,15 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
 *.egg-info
-.idea
-outputs
-logs
-wandb
-MUJOCO_LOG.TXT
-deploy/robots/go2/build
-deploy/robots/g1/build
-deploy/robots/g1_23dof/build
-deploy/robots/h1_2/build
+*.pyc
+*.pt
+# Virtual environments
+.venv
+
+#Checkpoints directory
+deploy/robots/go2/config/policy/velocity/*
+

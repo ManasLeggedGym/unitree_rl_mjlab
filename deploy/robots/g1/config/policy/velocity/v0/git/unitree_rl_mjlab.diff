@@ -1,0 +1,183 @@
+--- git status ---
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   deploy/robots/go2/config/config.yaml
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	deploy/robots/go2/config/policy/velocity/v0/events.out.tfevents.1770742574.summer.527258.0
+	deploy/robots/go2/config/policy/velocity/v0/exported/
+	deploy/robots/go2/config/policy/velocity/v0/git/
+	deploy/robots/go2/config/policy/velocity/v0/model_0.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_100.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_1000.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_10000.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_1100.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_1200.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_1300.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_1400.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_1500.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_1600.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_1700.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_1800.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_1900.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_200.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_2000.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_2100.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_2200.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_2300.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_2400.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_2500.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_2600.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_2700.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_2800.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_2900.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_300.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_3000.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_3100.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_3200.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_3300.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_3400.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_3500.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_3600.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_3700.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_3800.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_3900.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_400.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_4000.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_4100.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_4200.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_4300.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_4400.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_4500.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_4600.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_4700.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_4800.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_4900.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_500.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_5000.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_5100.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_5200.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_5300.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_5400.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_5500.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_5600.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_5700.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_5800.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_5900.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_600.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_6000.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_6100.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_6200.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_6300.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_6400.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_6500.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_6600.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_6700.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_6800.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_6900.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_700.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_7000.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_7100.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_7200.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_7300.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_7400.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_7500.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_7600.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_7700.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_7800.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_7900.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_800.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_8000.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_8100.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_8200.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_8300.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_8400.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_8500.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_8600.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_8700.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_8800.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_8900.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_900.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_9000.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_9100.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_9200.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_9300.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_9400.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_9500.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_9600.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_9700.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_9800.pt
+	deploy/robots/go2/config/policy/velocity/v0/model_9900.pt
+	deploy/robots/go2/config/policy/velocity/v0/params/agent.yaml
+	deploy/robots/go2/config/policy/velocity/v0/params/env.yaml
+	mjlab/__pycache__/
+	mjlab/actuator/__pycache__/
+	mjlab/asset_zoo/__pycache__/
+	mjlab/asset_zoo/robots/__pycache__/
+	mjlab/asset_zoo/robots/unitree_g1/__pycache__/
+	mjlab/asset_zoo/robots/unitree_go2/__pycache__/
+	mjlab/asset_zoo/robots/unitree_h1_2/__pycache__/
+	mjlab/entity/__pycache__/
+	mjlab/envs/__pycache__/
+	mjlab/envs/mdp/__pycache__/
+	mjlab/envs/mdp/actions/__pycache__/
+	mjlab/managers/__pycache__/
+	mjlab/rl/__pycache__/
+	mjlab/rsl_rl/__pycache__/
+	mjlab/rsl_rl/algorithms/__pycache__/
+	mjlab/rsl_rl/env/__pycache__/
+	mjlab/rsl_rl/modules/__pycache__/
+	mjlab/rsl_rl/networks/__pycache__/
+	mjlab/rsl_rl/runners/__pycache__/
+	mjlab/rsl_rl/storage/__pycache__/
+	mjlab/rsl_rl/utils/__pycache__/
+	mjlab/scene/__pycache__/
+	mjlab/sensor/__pycache__/
+	mjlab/sim/__pycache__/
+	mjlab/tasks/__pycache__/
+	mjlab/tasks/tracking/__pycache__/
+	mjlab/tasks/tracking/config/__pycache__/
+	mjlab/tasks/tracking/config/g1/__pycache__/
+	mjlab/tasks/tracking/mdp/__pycache__/
+	mjlab/tasks/tracking/rl/__pycache__/
+	mjlab/tasks/velocity/__pycache__/
+	mjlab/tasks/velocity/config/__pycache__/
+	mjlab/tasks/velocity/config/g1/__pycache__/
+	mjlab/tasks/velocity/config/g1_23dof/__pycache__/
+	mjlab/tasks/velocity/config/go2/__pycache__/
+	mjlab/tasks/velocity/config/h1_2/__pycache__/
+	mjlab/tasks/velocity/mdp/__pycache__/
+	mjlab/tasks/velocity/rl/__pycache__/
+	mjlab/terrains/__pycache__/
+	mjlab/utils/__pycache__/
+	mjlab/utils/buffers/__pycache__/
+	mjlab/utils/lab_api/__pycache__/
+	mjlab/utils/lab_api/rl/__pycache__/
+	mjlab/utils/lab_api/tasks/__pycache__/
+	mjlab/utils/noise/__pycache__/
+	mjlab/utils/wrappers/__pycache__/
+	mjlab/viewer/__pycache__/
+	mjlab/viewer/native/__pycache__/
+	mjlab/viewer/viser/__pycache__/
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/deploy/robots/go2/config/config.yaml b/deploy/robots/go2/config/config.yaml
+index 3563f90..e579a25 100644
+--- a/deploy/robots/go2/config/config.yaml
++++ b/deploy/robots/go2/config/config.yaml
+@@ -27,5 +27,5 @@ FSM:
+   Velocity:
+     transitions: 
+       Passive: LT + B.on_pressed
+-    policy_dir: config/policy/velocity
++    policy_dir: config/policy/velocity/v0
+     
+\ No newline at end of file

@@ -90,6 +90,8 @@ def run_train(task_id: str, cfg: TrainConfig, log_dir: Path) -> None:
     env = ManagerBasedRlEnv(
         cfg=cfg.env, device=device, render_mode="rgb_array" if cfg.video else None
     )
+    # print(f"action: {env.action_space}")
+    # print(env.observation_space)
 
     log_root_path = log_dir.parent
 
