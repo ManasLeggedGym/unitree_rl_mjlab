@@ -17,6 +17,7 @@ from mjlab.managers.termination_manager import TerminationTermCfg
 from mjlab.sensor import ContactMatch, ContactSensorCfg, ObjRef, RayCastSensorCfg, PinholeCameraPatternCfg
 from mjlab.tasks.velocity import mdp
 from mjlab.tasks.velocity.velocity_env_cfg import make_velocity_env_cfg
+from mjlab.utils.noise.noise_cfg import UniformNoiseCfg
 
 
 def unitree_go2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
@@ -33,7 +34,8 @@ def unitree_go2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     name="feet_ground_contact",
     primary=ContactMatch(mode="geom", pattern=geom_names, entity="robot"),
     secondary=ContactMatch(mode="body", pattern="terrain"),
-    fields=("found", "force"),
+    fields=("found", "force","normal"),
+    #       BINARY, FORCE OF CONTACT,   NORMAL FORCE
     reduce="netforce",
     num_slots=1,
     track_air_time=True,
@@ -52,7 +54,20 @@ def unitree_go2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     fields=("found",),
     reduce="none",
     num_slots=1,
-  )
+    )
+  thigh_shank_cfg = ContactSensorCfg(
+    name="leg_segment_contact",
+    primary=ContactMatch(
+        mode="geom",
+        entity="robot",
+        pattern=r".*(thigh|calf).*_collision.*",
+    ),
+    secondary=ContactMatch(mode="body", pattern="terrain"),
+    fields=("found",),
+    reduce="none",
+    num_slots=1,
+    )
+
   # 3d lidar
   # lidar_cfg = RayCastSensorCfg(
   #   name="lidar",
@@ -69,45 +84,76 @@ def unitree_go2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   #   exclude_parent_body=True,
   #   debug_vis=False,
   # )
-  # depth camera
-  # cfg = RayCastSensorCfg(
-  #   name="go2_depth",
-  #   frame=ObjRef(
-  #       type="body",
-  #       name="base",      # Or camera_mount if available
-  #       entity="robot",
-  #   ),
-  #   pattern=PinholeCameraPatternCfg(
-  #       fov=(90, 60),         # Horizontal, Vertical
-  #       resolution=(1.5, 1.5) # Controls image size
-  #   ),
-  #   ray_alignment="base",
-  #   exclude_parent_body=True,
-  # )
+  height_scanner_cfg = RayCastSensorCfg(
+    name="height_scanner",
+    frame=ObjRef(
+        type="body",
+        name="base_link",
+        entity="robot",
+    ),
+    pattern=PinholeCameraPatternCfg(
+        fov=(60, 60),       
+        resolution=(10, 10) # CHECK PAPER FOR RES
+    ),
+    ray_alignment="down",   
+    exclude_parent_body=True,
+    debug_vis=False,
+)
 
-  cfg.scene.sensors = (feet_ground_cfg, nonfoot_ground_cfg)
+
+  cfg.scene.sensors = (feet_ground_cfg, nonfoot_ground_cfg,height_scanner_cfg,thigh_shank_cfg)
   # adding sensors to policy(actor) and critic
-  # cfg.observations["policy"].terms["lidar"] = {
-  #   "func": mdp.sensor_data,
-  #   "params": {
-  #       "sensor_name": "lidar",
-  #       "flatten": True,
-  #   },
-  # }
-  # cfg.observations["policy"].terms["lidar"] = {
-  #   "func": mdp.sensor_data,
-  #   "params": {
-  #       "sensor_name": "lidar",
-  #       "flatten": True,
-  #   },
-  # }
-  # cfg.observations["critic"].terms["lidar"] = {
-  #   "func": mdp.sensor_data,
-  #   "params": {
-  #       "sensor_name": "lidar",
-  #       "flatten": True,
-  #   },
-  # }
+  cfg.observations["policy"].terms["height_scan"] = {
+      "func": mdp.sensor_data,
+      "params": {
+          "sensor_name": "height_scanner",
+          "flatten": True,
+      },
+      "noise": UniformNoiseCfg(
+        n_min=-0.01,
+        n_max=0.01,
+        operation="add",
+    ),
+  }
+
+  cfg.observations["critic"].terms["height_scan"] = {
+    "func": mdp.sensor_data,
+    "params": {
+        "sensor_name": "height_scanner",
+        "flatten": True,
+    },
+  }
+  cfg.observations["critic"].terms["feet_contact"] = {
+      "func": mdp.sensor_data,
+      "params": {
+          "sensor_name": "feet_ground_contact",
+          "flatten": True,
+      },
+  }
+
+  cfg.observations["critic"].terms["nonfoot_contact"] = {
+      "func": mdp.sensor_data,
+      "params": {
+          "sensor_name": "nonfoot_ground_touch",
+          "flatten": True,
+      },
+  }
+  cfg.observations["critic"].terms["leg_segment_contact"] = {
+    "func": mdp.sensor_data,
+    "params": {
+        "sensor_name": "leg_segment_contact",
+        "flatten": True,
+    },
+  }
+  #check if legal in mujoco
+  cfg.observations["critic"].terms["external_forces"] = {
+    "func": mdp.body_external_forces,
+    "params": {
+        "body_name": "base_link",
+        "flatten": True,
+    },
+  }
+
 
   print(f"\n----------Sensor------------\n{cfg.observations.keys()}\n-------Policy------\n{cfg.observations['policy'].terms.keys()}-------CritiC------\n{cfg.observations['critic'].terms.keys()}")
 
