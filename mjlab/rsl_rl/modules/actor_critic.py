@@ -158,6 +158,7 @@ class ActorCritic(nn.Module):
 
     def get_actor_obs(self, obs):
         obs_list = []
+        print("The observation group looks like:",self.obs_groups['policy'])
         for obs_group in self.obs_groups["policy"]:
             obs_list.append(obs[obs_group])
         return torch.cat(obs_list, dim=-1)

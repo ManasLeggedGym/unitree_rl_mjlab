@@ -1,0 +1,1 @@
+python3 /media/ok/ubuntu/Quadruped_Projects/legged_rl/unitree_rl_mjlab/scripts/train.py Mjlab-Velocity-Flat-Unitree-Go2 --env.scene.num-envs=4096
