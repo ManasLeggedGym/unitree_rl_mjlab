@@ -44,6 +44,7 @@ class TrainConfig:
 
 def run_train(task_id: str, cfg: TrainConfig, log_dir: Path) -> None:
     cuda_visible = os.environ.get("CUDA_VISIBLE_DEVICES", "")
+    #Setting the device etc.
     if cuda_visible == "":
         device = "cpu"
         seed = cfg.agent.seed
@@ -124,7 +125,8 @@ def run_train(task_id: str, cfg: TrainConfig, log_dir: Path) -> None:
         )
         print("[INFO] Recording videos during training.")
 
-    env = RslRlVecEnvWrapper(env, clip_actions=cfg.agent.clip_actions)
+    env = RslRlVecEnvWrapper(env, clip_actions=cfg.agent.clip_actions) # So in order to add some functionalities not required at the level of the ManageerRLConfig 
+    #but rsl_rl needs the env object to have certain functions
 
     agent_cfg = asdict(cfg.agent)
     env_cfg = asdict(cfg.env)
@@ -133,7 +135,7 @@ def run_train(task_id: str, cfg: TrainConfig, log_dir: Path) -> None:
 
     runner_kwargs = {}
     runner = runner_cls(env, agent_cfg, str(log_dir), device, **runner_kwargs)
-
+    #Okay this is the OnPolciyRunner - what does it use by default? - PPO?
     add_wandb_tags(cfg.agent.wandb_tags)
     runner.add_git_repo_to_log(__file__)
     if resume_path is not None:
@@ -168,12 +170,12 @@ def launch_training(task_id: str, args: TrainConfig | None = None):
         os.environ["CUDA_VISIBLE_DEVICES"] = ""
     else:
         os.environ["CUDA_VISIBLE_DEVICES"] = ",".join(map(str, selected_gpus))
-    os.environ["MUJOCO_GL"] = "egl"
+    os.environ["MUJOCO_GL"] = "egl" #Headless GPU rendering for mujoco
 
     if num_gpus <= 1:
         run_train(task_id, args, log_dir)
     else:
-        import torchrunx
+        import torchrunx #Not relevant for our setup
 
         logging.basicConfig(level=logging.INFO)
 

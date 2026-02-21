@@ -40,6 +40,10 @@ from mjlab.viewer.viewer_config import ViewerConfig
 
 @dataclass(kw_only=True)
 class ManagerBasedRlEnvCfg:
+  """It is a manager based config because every aspect of the environment is handled by individual
+  modules"""
+  
+  
   """Configuration for a manager-based RL environment.
 
   This config defines all aspects of an RL environment: the physical scene,

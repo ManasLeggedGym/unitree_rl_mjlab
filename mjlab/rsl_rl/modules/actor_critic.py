@@ -158,6 +158,9 @@ class ActorCritic(nn.Module):
 
     def get_actor_obs(self, obs):
         obs_list = []
+        print(obs.shape)
+        print(type(obs))
+        print("The keys in the group are:",self.obs_groups["policy"])
         print("The observation group looks like:",self.obs_groups['policy'])
         for obs_group in self.obs_groups["policy"]:
             obs_list.append(obs[obs_group])

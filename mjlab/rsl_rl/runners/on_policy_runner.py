@@ -75,7 +75,43 @@ class OnPolicyRunner:
             )
 
         # start learning
+        #*The observations are being computed in unitree_rl_mjlab/mjlab/rl/vecenv_wrapper.py
         obs = self.env.get_observations().to(self.device)
+        
+        #TODO Would need to change what observations are being recieved here - INSPECT Observations first:
+        #*The observation contains the input for the policy and the critic atm, the critic has 48 observations
+        #*per agent, while the policy has 45, What are the three extra observations for the critic? 
+        #TODO The crific contains 7 "terms" i.e. lin_vel, ang_vel, gravity etc. while the policy contains 6 terms, not the base_lin_vel
+        #TODO hence critic contains 48 observations(45 + 3 values for the base_lin_vel)
+        #? PROPRIOCETIVE OBSERVATIONS:
+        # Body vel - lin + ang [X]
+        #! Orientation 
+        # Joint position - [X]
+        # Velocty HISTORY - [CAN BE ADDED FROM THE ONES THAT EXIST]
+        # ACTION HISTORY - [X]
+        #! LEG'S PHASE  
+        
+        #? EXTEROCEPTIVE OBSERVATIONS:
+        #! Heightmap arond the robot - [NEEDS TO BE COMPUTED AND ADDED]
+        
+        #? PRIVIELLGED OBSERVATIONS(CHECK REQUIRED):
+        #! CONTACT STATES
+        #! CONTACT FORCES
+        #! CONTACT NORMALS
+        #! FRICTION COEFFICIENTS
+        #! THIGH AND SHANK CONTACT STATES
+        #! EXTERNAL FORCES AND TORQUES ON THE BODY
+        
+        try:
+            #Inspect everything possible in observations
+            print("Observations received from the environment:", obs.shape)
+            print("Data type of observations:",type(obs))
+            print("Observation keys:", obs.keys())
+            for key in obs.keys():
+                print(f"Observation '{key}': shape {obs[key].shape}, dtype {obs[key].dtype}")
+        except Exception as e:            print(f"Error inspecting observations: {e}")
+        
+        import ipdb; ipdb.set_trace()
         self.train_mode()  # switch to train mode (for dropout for example)
 
         # Book keeping
