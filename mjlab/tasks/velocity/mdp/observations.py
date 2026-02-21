@@ -6,7 +6,7 @@ import torch
 
 from mjlab.entity import Entity
 from mjlab.managers.scene_entity_config import SceneEntityCfg
-from mjlab.sensor import ContactSensor
+from mjlab.sensor import ContactSensor, RayCastSensor
 
 if TYPE_CHECKING:
   from mjlab.envs import ManagerBasedRlEnv
@@ -42,3 +42,10 @@ def foot_contact_forces(env: ManagerBasedRlEnv, sensor_name: str) -> torch.Tenso
   assert sensor_data.force is not None
   forces_flat = sensor_data.force.flatten(start_dim=1)  # [B, N*3]
   return torch.sign(forces_flat) * torch.log1p(torch.abs(forces_flat))
+
+def height_map(env: ManagerBasedRlEnv, sensor_name: str)-> torch.Tensor:
+  sensor: RayCastSensor = env.scene[sensor_name]
+  sensor_data = sensor.data
+  assert sensor_data.normals_w is not None
+  map = sensor_data.normals_w.flatten(start_dim=1)
+  return torch.sign(map) *  torch.log1p(torch.abs(map))

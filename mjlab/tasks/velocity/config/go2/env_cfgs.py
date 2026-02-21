@@ -14,9 +14,11 @@ from mjlab.asset_zoo.robots import (
 from mjlab.envs import ManagerBasedRlEnvCfg
 from mjlab.envs.mdp.actions import JointPositionActionCfg
 from mjlab.managers.termination_manager import TerminationTermCfg
-from mjlab.sensor import ContactMatch, ContactSensorCfg #, ObjRef, RayCastSensorCfg, PinholePatternCfg
+from mjlab.sensor import ContactMatch, ContactSensorCfg , ObjRef, RayCastSensorCfg, PinholeCameraPatternCfg, GridPatternCfg
 from mjlab.tasks.velocity import mdp
 from mjlab.tasks.velocity.velocity_env_cfg import make_velocity_env_cfg
+
+
 
 
 def unitree_go2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
@@ -53,6 +55,52 @@ def unitree_go2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     reduce="none",
     num_slots=1,
   )
+#   print(cfg.scene.entities["robot"])
+#   height_scanner_cfg = RayCastSensorCfg(
+#     name="height_scanner",
+#     frame=ObjRef(
+#         type="body",
+#         name="base_link",
+#         entity="robot",
+#     ),
+#     pattern=PinholeCameraPatternCfg(
+#         width=32,      # pixels horizontally
+#         height=24,     # pixels vertically
+#         fovy=60.0,     # vertical FOV in degrees
+#     ),
+#     ray_alignment="base",   # behaves like real camera
+#     exclude_parent_body=True,
+#     debug_vis=True,
+#     viz=RayCastSensorCfg.VizCfg(
+#         hit_color=(0, 1, 0, 0.8),
+#         miss_color=(1, 0, 0, 0.4),
+#         show_rays=True,
+#         show_normals=True,
+#         normal_color=(1, 1, 0, 1),
+#     ),
+# )
+  height_scanner_cfg = RayCastSensorCfg(
+      name="height_scanner",
+      frame=ObjRef(
+          type="body",
+          name="base_link",
+          entity="robot",
+      ),
+      pattern= GridPatternCfg(
+          size=(1.0, 1.0),     # 1m x1m
+          resolution=0.1,      # 10cm spacing
+      ),
+      ray_alignment="yaw",     
+      exclude_parent_body=True,
+      debug_vis=True,
+        viz=RayCastSensorCfg.VizCfg(
+            hit_color=(0, 1, 0, 0.8),      # Green for hits
+            miss_color=(1, 0, 0, 0.4),     # Red for misses
+            show_rays=True,                 # Draw ray arrows
+            show_normals=True,              # Draw surface normals
+            normal_color=(1, 1, 0, 1),     # Yellow normals
+        ),
+  )
   # 3d lidar
   # lidar_cfg = RayCastSensorCfg(
   #   name="lidar",
@@ -85,31 +133,10 @@ def unitree_go2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   #   exclude_parent_body=True,
   # )
 
-  cfg.scene.sensors = (feet_ground_cfg, nonfoot_ground_cfg)
-  # adding sensors to policy(actor) and critic
-  # cfg.observations["policy"].terms["lidar"] = {
-  #   "func": mdp.sensor_data,
-  #   "params": {
-  #       "sensor_name": "lidar",
-  #       "flatten": True,
-  #   },
-  # }
-  # cfg.observations["policy"].terms["lidar"] = {
-  #   "func": mdp.sensor_data,
-  #   "params": {
-  #       "sensor_name": "lidar",
-  #       "flatten": True,
-  #   },
-  # }
-  # cfg.observations["critic"].terms["lidar"] = {
-  #   "func": mdp.sensor_data,
-  #   "params": {
-  #       "sensor_name": "lidar",
-  #       "flatten": True,
-  #   },
-  # }
+  cfg.scene.sensors = (feet_ground_cfg, nonfoot_ground_cfg,height_scanner_cfg)
+  
 
-  print(f"\n----------Sensor------------\n{cfg.observations.keys()}\nPolicy{cfg.observations['policy'].terms.keys()}")
+  print(f"\n----------Sensor------------\n{cfg.observations.keys()}\nPolicy{cfg.observations['policy'].terms.keys()}\nCritic: {cfg.observations['critic'].terms.keys()}\nExtero : {cfg.observations['extero'].terms.keys()}")
 
   if cfg.scene.terrain is not None and cfg.scene.terrain.terrain_generator is not None:
     cfg.scene.terrain.terrain_generator.curriculum = True

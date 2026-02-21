@@ -9,7 +9,8 @@ wheels/
 *.pt
 # Virtual environments
 .venv
-
+logs/*
+*.sh
 #Checkpoints directory
 deploy/robots/go2/config/policy/velocity/*
 

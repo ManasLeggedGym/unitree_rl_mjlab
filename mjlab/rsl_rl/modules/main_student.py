@@ -45,6 +45,7 @@ class VisionStudentAgent:
             next_hidden_state: [(N_layer, N, H)]
         """
         return self.actor.getAction(proprio_state, extero_state, hidden_state)
+    def get_obs(obs,grp:str)
 
     def step(self, proprio_state, noisy_extero_state, extero_state, action):
         self.rollout_buffer.addTransition(proprio_state, noisy_extero_state, extero_state, action)

@@ -6,6 +6,7 @@
 """Definitions for neural-network components for RL-agents."""
 
 from .actor_critic import ActorCritic
+from .actor_critic_wild import ActorCritic_wild
 from .actor_critic_recurrent import ActorCriticRecurrent
 from .rnd import *
 from .student_teacher import StudentTeacher

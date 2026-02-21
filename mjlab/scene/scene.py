@@ -9,7 +9,7 @@ import numpy as np
 import torch
 
 from mjlab.entity import Entity, EntityCfg
-from mjlab.sensor import BuiltinSensor, Sensor, SensorCfg
+from mjlab.sensor import BuiltinSensor, Sensor, SensorCfg, RayCastSensor, RayCastSensorCfg
 from mjlab.terrains.terrain_importer import TerrainImporter, TerrainImporterCfg
 
 _SCENE_XML = Path(__file__).parent / "scene.xml"
