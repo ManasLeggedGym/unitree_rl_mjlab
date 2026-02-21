@@ -1,0 +1,94 @@
+--- git status ---
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   mjlab/sensor/__init__.py
+	modified:   mjlab/tasks/velocity/config/go2/env_cfgs.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	logs/rsl_rl/g1_velocity/
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/mjlab/sensor/__init__.py b/mjlab/sensor/__init__.py
+index 895b199..a504d05 100644
+--- a/mjlab/sensor/__init__.py
++++ b/mjlab/sensor/__init__.py
+@@ -6,9 +6,9 @@ from mjlab.sensor.contact_sensor import ContactMatch as ContactMatch
+ from mjlab.sensor.contact_sensor import ContactSensor as ContactSensor
+ from mjlab.sensor.contact_sensor import ContactSensorCfg as ContactSensorCfg
+ from mjlab.sensor.raycast_sensor import GridPatternCfg as GridPatternCfg
+-from mjlab.sensor.raycast_sensor import (
+-  PinholeCameraPatternCfg as PinholeCameraPatternCfg,
+-)
++# from mjlab.sensor.raycast_sensor import (
++#   PinholeCameraPatternCfg as PinholeCameraPatternCfg,
++# )
+ from mjlab.sensor.raycast_sensor import RayCastData as RayCastData
+ from mjlab.sensor.raycast_sensor import RayCastSensor as RayCastSensor
+ from mjlab.sensor.raycast_sensor import RayCastSensorCfg as RayCastSensorCfg
+diff --git a/mjlab/tasks/velocity/config/go2/env_cfgs.py b/mjlab/tasks/velocity/config/go2/env_cfgs.py
+index 5b4b5d5..449a375 100644
+--- a/mjlab/tasks/velocity/config/go2/env_cfgs.py
++++ b/mjlab/tasks/velocity/config/go2/env_cfgs.py
+@@ -14,7 +14,7 @@ from mjlab.asset_zoo.robots import (
+ from mjlab.envs import ManagerBasedRlEnvCfg
+ from mjlab.envs.mdp.actions import JointPositionActionCfg
+ from mjlab.managers.termination_manager import TerminationTermCfg
+-from mjlab.sensor import ContactMatch, ContactSensorCfg, ObjRef, RayCastSensorCfg, PinholePatternCfg
++from mjlab.sensor import ContactMatch, ContactSensorCfg #, ObjRef, RayCastSensorCfg, PinholePatternCfg
+ from mjlab.tasks.velocity import mdp
+ from mjlab.tasks.velocity.velocity_env_cfg import make_velocity_env_cfg
+ 
+@@ -54,21 +54,21 @@ def unitree_go2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
+     num_slots=1,
+   )
+   # 3d lidar
+-  lidar_cfg = RayCastSensorCfg(
+-    name="lidar",
+-    frame=ObjRef(
+-        type="body",
+-        name="base",
+-        entity="robot",
+-    ),
+-    pattern=PinholePatternCfg(
+-        fov=(360, 30),          # 360° horizontal, 30° vertical
+-        resolution=(1.0, 1.0), # 1° per rayh
+-    ),
+-    ray_alignment="base",
+-    exclude_parent_body=True,
+-    debug_vis=False,
+-  )
++  # lidar_cfg = RayCastSensorCfg(
++  #   name="lidar",
++  #   frame=ObjRef(
++  #       type="body",
++  #       name="base",
++  #       entity="robot",
++  #   ),
++  #   pattern=PinholePatternCfg(
++  #       fov=(360, 30),          # 360° horizontal, 30° vertical
++  #       resolution=(1.0, 1.0), # 1° per rayh
++  #   ),
++  #   ray_alignment="base",
++  #   exclude_parent_body=True,
++  #   debug_vis=False,
++  # )
+   # depth camera
+   # cfg = RayCastSensorCfg(
+   #   name="go2_depth",
+@@ -85,7 +85,7 @@ def unitree_go2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
+   #   exclude_parent_body=True,
+   # )
+ 
+-  cfg.scene.sensors = (feet_ground_cfg, nonfoot_ground_cfg,lidar_cfg)
++  cfg.scene.sensors = (feet_ground_cfg, nonfoot_ground_cfg)
+   # adding sensors to policy(actor) and critic
+   # cfg.observations["policy"].terms["lidar"] = {
+   #   "func": mdp.sensor_data,

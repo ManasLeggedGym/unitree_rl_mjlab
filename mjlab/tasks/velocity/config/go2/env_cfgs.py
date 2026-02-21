@@ -14,7 +14,7 @@ from mjlab.asset_zoo.robots import (
 from mjlab.envs import ManagerBasedRlEnvCfg
 from mjlab.envs.mdp.actions import JointPositionActionCfg
 from mjlab.managers.termination_manager import TerminationTermCfg
-from mjlab.sensor import ContactMatch, ContactSensorCfg, ObjRef, RayCastSensorCfg, PinholePatternCfg
+from mjlab.sensor import ContactMatch, ContactSensorCfg #, ObjRef, RayCastSensorCfg, PinholePatternCfg
 from mjlab.tasks.velocity import mdp
 from mjlab.tasks.velocity.velocity_env_cfg import make_velocity_env_cfg
 
@@ -54,21 +54,21 @@ def unitree_go2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     num_slots=1,
   )
   # 3d lidar
-  lidar_cfg = RayCastSensorCfg(
-    name="lidar",
-    frame=ObjRef(
-        type="body",
-        name="base",
-        entity="robot",
-    ),
-    pattern=PinholePatternCfg(
-        fov=(360, 30),          # 360° horizontal, 30° vertical
-        resolution=(1.0, 1.0), # 1° per rayh
-    ),
-    ray_alignment="base",
-    exclude_parent_body=True,
-    debug_vis=False,
-  )
+  # lidar_cfg = RayCastSensorCfg(
+  #   name="lidar",
+  #   frame=ObjRef(
+  #       type="body",
+  #       name="base",
+  #       entity="robot",
+  #   ),
+  #   pattern=PinholePatternCfg(
+  #       fov=(360, 30),          # 360° horizontal, 30° vertical
+  #       resolution=(1.0, 1.0), # 1° per rayh
+  #   ),
+  #   ray_alignment="base",
+  #   exclude_parent_body=True,
+  #   debug_vis=False,
+  # )
   # depth camera
   # cfg = RayCastSensorCfg(
   #   name="go2_depth",
@@ -85,7 +85,7 @@ def unitree_go2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   #   exclude_parent_body=True,
   # )
 
-  cfg.scene.sensors = (feet_ground_cfg, nonfoot_ground_cfg,lidar_cfg)
+  cfg.scene.sensors = (feet_ground_cfg, nonfoot_ground_cfg)
   # adding sensors to policy(actor) and critic
   # cfg.observations["policy"].terms["lidar"] = {
   #   "func": mdp.sensor_data,
