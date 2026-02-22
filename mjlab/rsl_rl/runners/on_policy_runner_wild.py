@@ -20,7 +20,7 @@ from mjlab.rsl_rl.utils import resolve_obs_groups, store_code_state
 from mjlab.rsl_rl.utils.exporter import export_policy_as_jit, export_policy_as_onnx
 
 
-class OnPolicyRunner:
+class OnPolicyRunnerWild:
     """On-policy runner for training and evaluation of actor-critic methods."""
 
     def __init__(self, env: VecEnv, train_cfg: dict, log_dir: str | None = None, device="cpu"):
