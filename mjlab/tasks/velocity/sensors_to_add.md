@@ -18,15 +18,15 @@
         #! LEG'S PHASE  
         
         #? EXTEROCEPTIVE OBSERVATIONS:
-        #! Heightmap arond the robot - [NEEDS TO BE COMPUTED AND ADDED]
+        #! Heightmap arond the robot - [X]
         
         #? PRIVIELLGED OBSERVATIONS(CHECK REQUIRED):
         #! CONTACT STATES 
         #! CONTACT FORCES
         #! CONTACT NORMALS
         #! FRICTION COEFFICIENTS
-        #! THIGH AND SHANK CONTACT STATES
-        #! EXTERNAL FORCES AND TORQUES ON THE BODY
+        #! THIGH AND SHANK CONTACT STATES 
+        #! EXTERNAL FORCES AND TORQUES ON THE BODY [X]
 
         # Questions to ask when adding sensors - Are they available as builtin sensors?
         - If yes, fetch, if not - can two or more builtin sensors give us those values?

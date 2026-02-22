@@ -80,12 +80,22 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
     "pose":ObservationTermCfg(
       func=mdp.orientation
     ),
+<<<<<<< HEAD
     "shank_thigh_contact":ObservationTermCfg(
       func=mdp.shank_thigh_contact,
       params={"sensor_name": "shank_thigh_contact"}
+=======
+    "contact_forces": ObservationTermCfg(
+      func=mdp.contact_forces,
+      params={"sensor_name": "feet_ground_contact"},
+    ),
+    "contact_normals": ObservationTermCfg(
+      func=mdp.contact_normals,
+      params={"sensor_name": "feet_ground_contact"},
+>>>>>>> 916ecab (Adding contact normals and forces - nan handling)
     ),
     **policy_terms,
-  }
+    }
     ##
     # Observations
     ##
@@ -121,83 +131,8 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
             params={"sensor_name": "height_scanner"},
             noise=Unoise(n_min=-0.07, n_max=0.07),
         ),
-        "foot_contact": ObservationTermCfg(
-            func=mdp.foot_contact,
-            params={"sensor_name": "feet_ground_contact"},
-            noise=Unoise(n_min=-0.1, n_max=0.1),
-        ),
-        "foot_contact_forces": ObservationTermCfg(
-            func=mdp.foot_contact_forces,
-            params={"sensor_name": "feet_ground_contact"},
-            noise=Unoise(n_min=-0.1, n_max=0.1),
-        ),
-    }
-    
-    #* The proprioceptive observations
-    prop_terms = {
-        "vel_history": ObservationTermCfg(
-            func=mdp.velocity_history,
-            params={"history_length": 5},
-            noise=Unoise(n_min=-0.2, n_max=0.2),
-        ),
-        
-        "action_history": ObservationTermCfg(
-            func=mdp.action_history,
-            params={"history_length": 5},
-            noise=Unoise(n_min=-0.1, n_max=0.1),
-        ),
-        
-        "leg_phase": ObservationTermCfg(
-            func=mdp.leg_phase,
-            noise=Unoise(n_min=-0.05, n_max=0.05),
-        )
-    }
-    
-    privilleged_obs = {
-        "contact_states": ObservationTermCfg(
-            func=mdp.contact_states,
-            noise=Unoise(n_min=-0.1, n_max=0.1),
-        ),
-        
-        "contact_forces": ObservationTermCfg(
-            func=mdp.contact_forces,
-            noise=Unoise(n_min=-0.1, n_max=0.1),
-        ),
-        
-        "contact_normals": ObservationTermCfg(
-            func=mdp.contact_normals,
-            noise=Unoise(n_min=-0.1, n_max=0.1),
-        ),
-        
-        "friction_estimates": ObservationTermCfg(
-            func=mdp.friction_estimates,
-            noise=Unoise(n_min=-0.1, n_max=0.1),
-        ),
-        
-        "thigh_n_shank_contact": ObservationTermCfg(
-            func=mdp.thigh_n_shank_contact,
-            noise=Unoise(n_min=-0.1, n_max=0.1),
-        ),
-        
-        "ext_force": ObservationTermCfg(
-            func=mdp.ext_force,
-            noise=Unoise(n_min=-0.1, n_max=0.1),
-        ),
-        
-        "ext_torque": ObservationTermCfg(
-            func=mdp.ext_torque,
-            noise=Unoise(n_min=-0.1, n_max=0.1),
-        ),
     }
 
-    critic_terms = {
-        "base_lin_vel": ObservationTermCfg(
-            func=mdp.builtin_sensor,
-            params={"sensor_name": "robot/imu_lin_vel"},
-        ),
-        **policy_terms,
-        **extero_terms,
-    }
 
     observations = {
         "policy": ObservationGroupCfg(
@@ -212,12 +147,12 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
             enable_corruption=False,
             history_length=1,
         ),
-        # "extero": ObservationGroupCfg(
-        #     terms=extero_terms,
-        #     concatenate_terms=True,
-        #     enable_corruption=True,
-        #     history_length=1,
-        # ),
+        "extero": ObservationGroupCfg(
+            terms=extero_terms,
+            concatenate_terms=True,
+            enable_corruption=True,
+            history_length=1,
+        ),
     }
 
     ##
