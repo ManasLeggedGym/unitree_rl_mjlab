@@ -1,0 +1,36 @@
+        # start learning
+        #*The observations are being computed in unitree_rl_mjlab/mjlab/rl/vecenv_wrapper.py
+        obs = self.env.get_observations().to(self.device)
+        
+        #TODO Would need to change what observations are being recieved here - INSPECT Observations first:
+        #*The observation contains the input for the policy and the critic atm, the critic has 48 observations
+        #*per agent, while the policy has 45, What are the three extra observations for the critic? 
+        #TODO The crific contains 7 "terms" i.e. lin_vel, ang_vel, gravity etc. while the policy contains 6 terms, not the base_lin_vel
+        #TODO hence critic contains 48 observations(45 + 3 values for the base_lin_vel)
+        
+        
+        #? PROPRIOCETIVE OBSERVATIONS:
+        # Body vel - lin + ang [X]
+        #! Orientation 
+        # Joint position - [X]
+        # Velocty HISTORY - [CAN BE ADDED FROM THE ONES THAT EXIST]
+        # ACTION HISTORY - [X]
+        #! LEG'S PHASE  
+        
+        #? EXTEROCEPTIVE OBSERVATIONS:
+        #! Heightmap arond the robot - [NEEDS TO BE COMPUTED AND ADDED]
+        
+        #? PRIVIELLGED OBSERVATIONS(CHECK REQUIRED):
+        #! CONTACT STATES 
+        #! CONTACT FORCES
+        #! CONTACT NORMALS
+        #! FRICTION COEFFICIENTS
+        #! THIGH AND SHANK CONTACT STATES
+        #! EXTERNAL FORCES AND TORQUES ON THE BODY
+
+        # Questions to ask when adding sensors - Are they available as builtin sensors?
+        - If yes, fetch, if not - can two or more builtin sensors give us those values?
+        - If not, can we add the new sensor?
+        - If not - we drop it
+
+        - Regarding histories - need to figure out the size of the history buffer
