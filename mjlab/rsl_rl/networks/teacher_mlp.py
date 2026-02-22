@@ -42,3 +42,4 @@ class Teacher_wild(nn.Module):
         pri = self.privil_encoder(privi_obs)
         ext = self.extero_encoder(extero_obs)
         return self.network.forward(torch.cat((pri,ext),dim=-1))
+ 

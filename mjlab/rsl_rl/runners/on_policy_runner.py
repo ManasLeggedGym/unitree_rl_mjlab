@@ -15,7 +15,7 @@ from collections import deque
 import rsl_rl
 from mjlab.rsl_rl.algorithms import PPO
 from mjlab.rsl_rl.env import VecEnv
-from mjlab.rsl_rl.modules import ActorCritic, ActorCriticRecurrent, resolve_rnd_config, resolve_symmetry_config
+from mjlab.rsl_rl.modules import ActorCritic, ActorCriticRecurrent, resolve_rnd_config, resolve_symmetry_config, ActorCritic_wild
 from mjlab.rsl_rl.utils import resolve_obs_groups, store_code_state
 from mjlab.rsl_rl.utils.exporter import export_policy_as_jit, export_policy_as_onnx
 
