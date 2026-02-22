@@ -63,6 +63,13 @@ def external_forces(env: ManagerBasedRlEnv) -> torch.Tensor:
 
 def orientation(env: ManagerBasedRlEnv):
   robot = env.scene.entities["robot"]
-  assert robot.data.root_link_quat_w3
+  assert robot.data.root_link_quat_w is not None
   pose = robot.data.root_link_pose_w
   return torch.sign(pose)* torch.log1p(torch.abs(pose))
+
+def shank_thigh_contact(env: ManagerBasedRlEnv, sensor_name: str):
+  sensor: ContactSensor = env.scene[sensor_name]
+  sensor_data = sensor.data
+  assert sensor_data.found is not None
+  return (sensor_data.found > 0).float() #check again
+  

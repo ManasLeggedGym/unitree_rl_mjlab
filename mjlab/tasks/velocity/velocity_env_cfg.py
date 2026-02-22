@@ -79,7 +79,11 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
     ),
     "pose":ObservationTermCfg(
       func=mdp.orientation
-    )
+    ),
+    "shank_thigh_contact":ObservationTermCfg(
+      func=mdp.shank_thigh_contact,
+      params={"sensor_name": "shank_thigh_contact"}
+    ),
     **policy_terms,
   }
 

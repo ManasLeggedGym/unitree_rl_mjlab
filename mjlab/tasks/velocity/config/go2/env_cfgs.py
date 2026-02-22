@@ -30,6 +30,8 @@ def unitree_go2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   foot_names = ("FR", "FL", "RR", "RL")
   site_names = ("FR", "FL", "RR", "RL")
   geom_names = tuple(f"{name}_foot_collision" for name in foot_names)
+  body_calf = tuple(f"{name}_calf" for name in foot_names)
+  body_thigh = tuple(f"{name}_thigh" for name in foot_names)
 
   feet_ground_cfg = ContactSensorCfg(
     name="feet_ground_contact",
@@ -40,6 +42,21 @@ def unitree_go2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     num_slots=1,
     track_air_time=True,
   )
+
+  shank_thigh_contact_cfg = ContactSensorCfg(
+    name="shank_thigh_contact",
+    primary=ContactMatch(
+      mode="body", 
+      pattern=body_calf,
+      entity="robot"),
+    secondary=ContactMatch(
+      mode="body",
+      pattern=".*_thigh",
+      entity="robot"),
+    fields=("found",),
+    num_slots=1,
+      )
+   
   nonfoot_ground_cfg = ContactSensorCfg(
     name="nonfoot_ground_touch",
     primary=ContactMatch(
@@ -80,7 +97,7 @@ def unitree_go2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   )
 
 
-  cfg.scene.sensors = (feet_ground_cfg, nonfoot_ground_cfg,height_scanner_cfg)
+  cfg.scene.sensors = (feet_ground_cfg, nonfoot_ground_cfg,height_scanner_cfg,shank_thigh_contact_cfg)
   
 
   print(f"\n----------Sensor------------\n{cfg.observations.keys()}\nPolicy{cfg.observations['policy'].terms.keys()}\nCritic: {cfg.observations['critic'].terms.keys()}\nExtero : {cfg.observations['extero'].terms.keys()}")

@@ -47,7 +47,7 @@ ROUGH_TERRAINS_CFG = TerrainGeneratorCfg(
     "wave_terrain": terrain_gen.HfWaveTerrainCfg(
       proportion=0.1,
       amplitude_range=(0.0, 0.2),
-      num_waves=4,
+      num_waves=4.0,
       border_width=0.25,
     ),
   },
