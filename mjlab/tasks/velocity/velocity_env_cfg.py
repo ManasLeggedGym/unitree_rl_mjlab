@@ -80,11 +80,11 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
     "pose":ObservationTermCfg(
       func=mdp.orientation
     ),
-<<<<<<< HEAD
+    
     "shank_thigh_contact":ObservationTermCfg(
       func=mdp.shank_thigh_contact,
       params={"sensor_name": "shank_thigh_contact"}
-=======
+    ),
     "contact_forces": ObservationTermCfg(
       func=mdp.contact_forces,
       params={"sensor_name": "feet_ground_contact"},
@@ -92,7 +92,6 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
     "contact_normals": ObservationTermCfg(
       func=mdp.contact_normals,
       params={"sensor_name": "feet_ground_contact"},
->>>>>>> 916ecab (Adding contact normals and forces - nan handling)
     ),
     **policy_terms,
     }

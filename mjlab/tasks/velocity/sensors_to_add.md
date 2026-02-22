@@ -11,21 +11,21 @@
         
         #? PROPRIOCETIVE OBSERVATIONS:
         # Body vel - lin + ang [X]
-        #! Orientation 
+        #! Orientation - [X]
         # Joint position - [X]
-        # Velocty HISTORY - [CAN BE ADDED FROM THE ONES THAT EXIST]
-        # ACTION HISTORY - [X]
-        #! LEG'S PHASE  
+        # Velocty HISTORY - [Can be done from buffer, but then what is sent initially? Empty tensor - mp]
+        # ACTION HISTORY - [LAST ACTION AVAILABLE - GET HISTORY FROM BUFFER]
+        #! LEG'S PHASE  - 
         
         #? EXTEROCEPTIVE OBSERVATIONS:
         #! Heightmap arond the robot - [X]
         
         #? PRIVIELLGED OBSERVATIONS(CHECK REQUIRED):
-        #! CONTACT STATES 
-        #! CONTACT FORCES
-        #! CONTACT NORMALS
-        #! FRICTION COEFFICIENTS
-        #! THIGH AND SHANK CONTACT STATES 
+        #! CONTACT STATES [X]
+        #! CONTACT FORCES [X]
+        #! CONTACT NORMALS [X]
+        #! FRICTION COEFFICIENTS - CHange needed
+        #! THIGH AND SHANK CONTACT STATES [X]
         #! EXTERNAL FORCES AND TORQUES ON THE BODY [X]
 
         # Questions to ask when adding sensors - Are they available as builtin sensors?

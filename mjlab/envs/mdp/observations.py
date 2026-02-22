@@ -77,6 +77,7 @@ def joint_vel_rel(
 ##
 
 
+
 def last_action(env: ManagerBasedRlEnv, action_name: str | None = None) -> torch.Tensor:
   if action_name is None:
     return env.action_manager.action

@@ -6,7 +6,33 @@
 - [x] write a teacher mlp that has extero and proprio encoder - Very basic network has been added
 - [x] use teacher mlp in ActorCritic: Updated the actorcritic class to use teacher mlp which takes in proprio and extero seperately.
 
-### Adding sensors:
+
+### Teacher Model Mods
+- [] Encoders need to be figured out - TODOLATER
+- [] Modify rsl_rl ppo and onpolicy runner to use actor_critic_wild.py
+- [] Proprio, extero, noisy - best to keep separated, to keep forward pass simple.
+
+### Observations
+[] PROPRIOCETIVE OBSERVATIONS:
+  [x]  Body vel - lin + ang [X]
+  [x]  Orientation - [X]
+  [x]  Joint position - [X]
+  [x]  Velocty HISTORY - [Can be done from buffer, but then what is sent initially? Empty tensor - mp]
+  []  ACTION HISTORY - [LAST ACTION AVAILABLE - GET HISTORY FROM BUFFER]
+  []  LEG'S PHASE  -   [] 
+
+[]  EXTEROCEPTIVE OBSERVATIONS:
+  [x]  Heightmap arond the robot - [X]  [] 
+
+[]  PRIVIELLGED OBSERVATIONS(CHECK REQUIRED):
+  [x]  CONTACT STATES [X]
+  [x]  CONTACT FORCES [X]
+  [x]  CONTACT NORMALS [X]
+  []  FRICTION COEFFICIENTS - CHange needed
+  [x]  THIGH AND SHANK CONTACT STATES [X]
+  [x]  EXTERNAL FORCES AND TORQUES ON THE BODY [X]
+
+### Instructions on adding sensors:
 STEP 0: Identify the right [task](mjlab/tasks).
 
 STEP 1: add the sensor to the correct [env_config](mjlab/tasks/velocity/config/go2/env_cfgs.py)
