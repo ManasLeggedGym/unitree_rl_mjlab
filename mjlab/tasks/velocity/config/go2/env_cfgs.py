@@ -55,30 +55,7 @@ def unitree_go2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     reduce="none",
     num_slots=1,
   )
-#   print(cfg.scene.entities["robot"])
-#   height_scanner_cfg = RayCastSensorCfg(
-#     name="height_scanner",
-#     frame=ObjRef(
-#         type="body",
-#         name="base_link",
-#         entity="robot",
-#     ),
-#     pattern=PinholeCameraPatternCfg(
-#         width=32,      # pixels horizontally
-#         height=24,     # pixels vertically
-#         fovy=60.0,     # vertical FOV in degrees
-#     ),
-#     ray_alignment="base",   # behaves like real camera
-#     exclude_parent_body=True,
-#     debug_vis=True,
-#     viz=RayCastSensorCfg.VizCfg(
-#         hit_color=(0, 1, 0, 0.8),
-#         miss_color=(1, 0, 0, 0.4),
-#         show_rays=True,
-#         show_normals=True,
-#         normal_color=(1, 1, 0, 1),
-#     ),
-# )
+
   height_scanner_cfg = RayCastSensorCfg(
       name="height_scanner",
       frame=ObjRef(
@@ -92,7 +69,7 @@ def unitree_go2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
       ),
       ray_alignment="yaw",     
       exclude_parent_body=True,
-      debug_vis=True,
+      debug_vis=False,
         viz=RayCastSensorCfg.VizCfg(
             hit_color=(0, 1, 0, 0.8),      # Green for hits
             miss_color=(1, 0, 0, 0.4),     # Red for misses
@@ -101,37 +78,7 @@ def unitree_go2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
             normal_color=(1, 1, 0, 1),     # Yellow normals
         ),
   )
-  # 3d lidar
-  # lidar_cfg = RayCastSensorCfg(
-  #   name="lidar",
-  #   frame=ObjRef(
-  #       type="body",
-  #       name="base",
-  #       entity="robot",
-  #   ),
-  #   pattern=PinholePatternCfg(
-  #       fov=(360, 30),          # 360° horizontal, 30° vertical
-  #       resolution=(1.0, 1.0), # 1° per rayh
-  #   ),
-  #   ray_alignment="base",
-  #   exclude_parent_body=True,
-  #   debug_vis=False,
-  # )
-  # depth camera
-  # cfg = RayCastSensorCfg(
-  #   name="go2_depth",
-  #   frame=ObjRef(
-  #       type="body",
-  #       name="base",      # Or camera_mount if available
-  #       entity="robot",
-  #   ),
-  #   pattern=PinholePatternCfg(
-  #       fov=(90, 60),         # Horizontal, Vertical
-  #       resolution=(1.5, 1.5) # Controls image size
-  #   ),
-  #   ray_alignment="base",
-  #   exclude_parent_body=True,
-  # )
+
 
   cfg.scene.sensors = (feet_ground_cfg, nonfoot_ground_cfg,height_scanner_cfg)
   

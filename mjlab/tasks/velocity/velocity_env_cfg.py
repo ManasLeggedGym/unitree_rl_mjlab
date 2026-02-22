@@ -33,6 +33,14 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
   ##
   # Observations
   ##
+  extero_terms = {
+    "height_map":ObservationTermCfg(
+      func= mdp.height_map,
+      params={"sensor_name": "height_scanner"},
+      noise= Unoise(n_min=-0.07, n_max=0.07)
+    ),
+
+  }
 
   policy_terms = {
     "base_ang_vel": ObservationTermCfg(
@@ -57,23 +65,22 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
       noise=Unoise(n_min=-1.5, n_max=1.5),
     ),
     "actions": ObservationTermCfg(func=mdp.last_action),
+    **extero_terms
   }
-  extero_terms = {
-    "height_map":ObservationTermCfg(
-      func= mdp.height_map,
-      params={"sensor_name": "height_scanner"},
-      noise= Unoise(n_min=-0.07, n_max=0.07)
-    ),
-
-  }
+  
 
   critic_terms = {
     "base_lin_vel": ObservationTermCfg(
       func=mdp.builtin_sensor,
       params={"sensor_name": "robot/imu_lin_vel"},
     ),
+    "external_forces": ObservationTermCfg(
+      func=mdp.external_forces      
+    ),
+    "pose":ObservationTermCfg(
+      func=mdp.orientation
+    )
     **policy_terms,
-    **extero_terms,
   }
 
   observations = {
