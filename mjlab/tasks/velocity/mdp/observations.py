@@ -64,12 +64,89 @@ def external_forces(env: ManagerBasedRlEnv) -> torch.Tensor:
 def orientation(env: ManagerBasedRlEnv):
   robot = env.scene.entities["robot"]
   assert robot.data.root_link_quat_w is not None
-  pose = robot.data.root_link_pose_w
-  return torch.sign(pose)* torch.log1p(torch.abs(pose))
+  quat = robot.data.root_link_quat_w
+  return quat
+  # return torch.sign(quat)* torch.log1p(torch.abs(quat)) #*Check required - is this needed?
+
 
 def shank_thigh_contact(env: ManagerBasedRlEnv, sensor_name: str):
   sensor: ContactSensor = env.scene[sensor_name]
   sensor_data = sensor.data
   assert sensor_data.found is not None
   return (sensor_data.found > 0).float() #check again
-  
+
+def contact_forces(env: ManagerBasedRlEnv, sensor_name: str) -> torch.Tensor:
+  sensor: ContactSensor = env.scene[sensor_name]
+  sensor_data = sensor.data
+  assert sensor_data.force is not None
+  return sensor_data.force
+
+def contact_normals(env: ManagerBasedRlEnv, sensor_name: str) -> torch.Tensor:
+  sensor: ContactSensor = env.scene[sensor_name]
+  sensor_data = sensor.data
+  #We will rely on the fact that the force attribute is always populated
+  B,N,D = sensor_data.force.shape
+  if sensor_data.normal is not None:
+    return sensor_data.normal
+  else:
+    # If normals are not provided, we can't compute them from forces without knowing the friction model.
+    # As a fallback, we return a default normal vector pointing upwards in the contact frame.
+    return torch.tensor([0.0, 0.0, 1.0], device=sensor_data.force.device).expand(B, N, 3)
+
+
+def friction(env: ManagerBasedRlEnv):
+  """Estimate per-contact friction coefficient from a contact sensor.
+
+  This computes mu ~= ||tangential_force|| / |normal_force| per contact slot.
+  It prefers using the contact-normal if provided by the sensor (global frame);
+  otherwise it assumes the contact frame uses index 2 as the normal axis.
+
+  Args:
+    env: The environment.
+    sensor_name: (optional) name of ContactSensor to use; default 'feet_ground_contact'
+  Returns:
+    Tensor of shape [B, N] with estimated friction coefficients (clamped).
+  """
+  # Default sensor commonly used in velocity tasks.
+  sensor_name = "feet_ground_contact"
+  sensor: ContactSensor = env.scene[sensor_name]
+  data = sensor.data
+
+  if data.force is None:
+    raise RuntimeError(f"Contact sensor '{sensor_name}' has no force field available")
+
+  f = data.force  # [B, N, 3]
+
+  # If sensor provides contact normals, use them to project forces.
+  if data.normal is not None:
+    n = data.normal
+    n_norm = torch.norm(n, dim=-1, keepdim=True).clamp_min(1e-8)
+    n_unit = n / n_norm
+    # normal force = projection of force onto normal (signed)
+    normal_force = (f * n_unit).sum(dim=-1)
+    tangential = f - normal_force.unsqueeze(-1) * n_unit
+    tangential_mag = torch.norm(tangential, dim=-1)
+  else:
+    # Assume contact-frame ordering where index 2 is the normal component.
+    normal_force = f[..., 2]
+    tangential_mag = torch.norm(f[..., :2], dim=-1)
+
+  mu = tangential_mag / (torch.abs(normal_force) + 1e-6)
+  # Clamp to avoid infinities from tiny normals and keep values reasonable.
+  return torch.clamp(mu, max=50.0)
+
+
+def terrain_geom_friction(env: ManagerBasedRlEnv, asset_cfg: SceneEntityCfg = _DEFAULT_ASSET_CFG):
+  """Read geom friction entries for an entity (e.g., the terrain).
+
+  Returns a flattened tensor per environment containing the geom friction axes
+  for all geoms belonging to the given entity.
+  """
+  asset = env.scene[asset_cfg.name]
+  # geom_ids is a tensor of global geom indices for this entity
+  geom_ids = asset.indexing.geom_ids
+  # env.sim.model.geom_friction has shape [nworld, n_geoms, axes]
+  model_field = env.sim.model.geom_friction
+  # Select only this entity's geoms and flatten last two dims
+  vals = model_field[:, geom_ids, :]
+  return vals.flatten(start_dim=1)

@@ -183,7 +183,6 @@ class ContactSensor(Sensor[ContactData]):
           f"Sensor '{cfg.name}': global_frame=True requires 'normal' and 'tangent' "
           "in fields (needed to build rotation matrix)"
         )
-
     self._slots: list[_ContactSlot] = []
     self._data: mjwarp.Data | None = None
     self._device: str | None = None
