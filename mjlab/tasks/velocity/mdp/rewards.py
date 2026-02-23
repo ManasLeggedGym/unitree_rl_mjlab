@@ -22,27 +22,35 @@ _DEFAULT_ASSET_CFG = SceneEntityCfg("robot")
 
 def track_linear_velocity(
   env: ManagerBasedRlEnv,
-  std: float,
   command_name: str,
   asset_cfg: SceneEntityCfg = _DEFAULT_ASSET_CFG,
 ) -> torch.Tensor:
-  """Reward for tracking the commanded base linear velocity.
-
-  The commanded z velocity is assumed to be zero.
+  """
+  1. r = exp(-|v|2), if |vdes| = 0
+  2. r = 1.0, else if vdes · v > |vdes|
+  3. exp(-(vdes · v - |vdes|)2), otherwise
   """
   asset: Entity = env.scene[asset_cfg.name]
   command = env.command_manager.get_command(command_name)
-  assert command is not None, f"Command '{command_name}' not found."
   actual = asset.data.root_link_lin_vel_b
-  xy_error = torch.sum(torch.square(command[:, :2] - actual[:, :2]), dim=1)
-  z_error = torch.square(actual[:, 2])
-  lin_vel_error = xy_error + z_error
-  return torch.exp(-lin_vel_error / std**2)
+  v_des = torch.norm(command[:, :2], dim=1)  # (batch,)
+  v = torch.norm(actual[:, :2], dim=1)       # (batch,)
+  dot = torch.sum(command[:, :2] * actual[:, :2], dim=1)
+  proj = dot / (v_des + 1e-6)
+  reward = torch.zeros_like(v_des)
+  mask_zero = v_des < 1e-6
+  reward[mask_zero] = torch.exp(-v[mask_zero] ** 2)
+  mask_fast = (~mask_zero) & (proj > v_des)
+  reward[mask_fast] = 1.0
+  mask_else = (~mask_zero) & (~mask_fast)
+  reward[mask_else] = torch.exp(
+      -(proj[mask_else] - v_des[mask_else]) ** 2
+  )
+  return reward
 
 
 def track_angular_velocity(
   env: ManagerBasedRlEnv,
-  std: float,
   command_name: str,
   asset_cfg: SceneEntityCfg = _DEFAULT_ASSET_CFG,
 ) -> torch.Tensor:
@@ -54,8 +62,19 @@ def track_angular_velocity(
   command = env.command_manager.get_command(command_name)
   assert command is not None, f"Command '{command_name}' not found."
   actual = asset.data.root_link_ang_vel_b
-  z_error = torch.square(command[:, 2] - actual[:, 2])
-  return torch.exp(-z_error / std**2)
+  w_des = command[:, 2]   # (batch,)
+  w = actual[:, 2]        # (batch,)
+  reward = torch.zeros_like(w_des)
+  mask_zero = torch.abs(w_des) < 1e-6
+  reward[mask_zero] = torch.exp(-w[mask_zero] ** 2)
+  mask_fast = (~mask_zero) & (w * torch.sign(w_des) > torch.abs(w_des))
+  reward[mask_fast] = 1.0
+  mask_else = (~mask_zero) & (~mask_fast)
+  reward[mask_else] = torch.exp(
+      -(w[mask_else] - w_des[mask_else]) ** 2
+  )
+  print(f"angular: {reward}")
+  return reward
 
 
 def flat_orientation(

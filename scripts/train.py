@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Literal, cast
 import tyro
 
-from mjlab.rsl_rl.runners import OnPolicyRunner, On
+from mjlab.rsl_rl.runners import OnPolicyRunner
 from mjlab.envs import ManagerBasedRlEnv, ManagerBasedRlEnvCfg
 from mjlab.rl import RslRlOnPolicyRunnerCfg, RslRlVecEnvWrapper
 from mjlab.tasks.registry import list_tasks, load_env_cfg, load_rl_cfg, load_runner_cls

@@ -60,13 +60,20 @@ STEP 3: add the declare the sensor function in [observations](mjlab/tasks/veloci
 
 STEP 4: add the sensor function to the [observation file](mjlab/tasks/velocity/velocity_env_cfg.py), keep track of the sensor name declared in step 2.
 
-### Instructions om adding observations from the robot 
+### Instructions on adding observations from the robot 
 STEP 0: Identify the right [task](mjlab/tasks).
 
 STEP 1: Make a function in the [observations](mjlab/tasks/velocity/mdp/observations.py) that takes in the env and returns the required data from the robot entity
 
-STEP 2: Add initialise the sensor at [observation file](mjlab/tasks/velocity/velocity_env_cfg.py) as a ObservationTerm
+STEP 2: Add initialise the sensor at [task config file](mjlab/tasks/velocity/velocity_env_cfg.py) as a ObservationTerm
 
 As it is not a real sensor but directly getting data from the bot, we do not need to add the sensor to the scene 
 
+### Instructions on adding reward
+STEP 0: Identify the right [task](mjlab/tasks).
 
+STEP 1: Add reward function to [rewards](mjlab/tasks/velocity/mdp/rewards.py) 
+
+NOTE: the expected and actual are of shape (batchsize, ), so the rewards have to be alloted keeping in the index in mind as each index correspond to differnt bots
+
+STEP 2: add the reward config in [task config file](mjlab/tasks/velocity/velocity_env_cfg.py), declare the function and the parameters.
