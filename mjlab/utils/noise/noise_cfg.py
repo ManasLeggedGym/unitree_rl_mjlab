@@ -6,6 +6,7 @@ from typing import ClassVar, Literal
 
 import torch
 from typing_extensions import override
+import random
 
 from mjlab.utils.noise import noise_model
 
@@ -74,7 +75,41 @@ class UniformNoiseCfg(NoiseCfg):
       return noise
     else:
       raise ValueError(f"Unsupported noise operation: {self.operation}")
+    
+@dataclass
+class Map_noise_cfg(NoiseCfg):
+  mean: torch.Tensor | float = 0.0
+  std: torch.Tensor | float = 1.0
+  s: torch.Tensor | float = 1.0
+  # shift and add gausian sampled noise
 
+  @override
+  def apply(self, data):
+    print(f"Noise: {data}")
+    choice = [1,-1,0]
+    #the tensor needs to be in 2d
+    assert data.ndim ==2
+    shift_x,shift_y = random.choice(choice) * self.s, random.choice(choice)* self.s
+    H, W = data.shape
+    shifted = torch.zeros_like(data)
+
+    src_x_start = max(0, -shift_x)
+    src_x_end   = min(H, H - shift_x) 
+    src_y_start = max(0, -shift_y)
+    src_y_end   = min(W, W - shift_y)
+
+    dst_x_start = max(0, shift_x)
+    dst_x_end   = min(H, H + shift_x)
+    dst_y_start = max(0, shift_y)
+    dst_y_end   = min(W, W + shift_y)
+
+    shifted[dst_x_start:dst_x_end, dst_y_start:dst_y_end] = data[src_x_start:src_x_end, src_y_start:src_y_end]
+
+    noise = self.mean + self.std * torch.randn_like(shifted)
+    print(f"noise added {shifted+noise}")
+    return shifted + noise
+    
+    
 
 @dataclass
 class GaussianNoiseCfg(NoiseCfg):

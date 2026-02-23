@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 
 _DEFAULT_ASSET_CFG = SceneEntityCfg("robot")
 
-
 def foot_height(
   env: ManagerBasedRlEnv, asset_cfg: SceneEntityCfg = _DEFAULT_ASSET_CFG
 ) -> torch.Tensor:
@@ -67,7 +66,6 @@ def orientation(env: ManagerBasedRlEnv):
   quat = robot.data.root_link_quat_w
   return quat
   # return torch.sign(quat)* torch.log1p(torch.abs(quat)) #*Check required - is this needed?
-
 
 def shank_thigh_contact(env: ManagerBasedRlEnv, sensor_name: str):
   sensor: ContactSensor = env.scene[sensor_name]

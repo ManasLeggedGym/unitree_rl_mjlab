@@ -86,7 +86,7 @@ def unitree_go2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
       ),
       ray_alignment="yaw",     
       exclude_parent_body=True,
-      debug_vis=False,
+      debug_vis=True,
         viz=RayCastSensorCfg.VizCfg(
             hit_color=(0, 1, 0, 0.8),      # Green for hits
             miss_color=(1, 0, 0, 0.4),     # Red for misses
