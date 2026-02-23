@@ -127,7 +127,7 @@ class ActorCritic_wild(nn.Module):
     def entropy(self):
         return self.distribution.entropy().sum(dim=-1)
 
-    def update_distribution(self, obs_a,obs_e):
+    def update_distribution(self, obs_a, obs_e):
         if self.state_dependent_std:
             # compute mean and standard deviation
             mean_and_std = self.actor(obs_a,obs_e)
@@ -151,7 +151,7 @@ class ActorCritic_wild(nn.Module):
         # create distribution
         self.distribution = Normal(mean, std)
 
-    def act(self, obs, **kwargs):
+    def act(self, obs, **kwargs): #TODO NEEDS TO BE MODIFIED
         obs_a = self.get_actor_obs(obs)
         obs_a = self.actor_obs_normalizer(obs_a)
         obs_e = self.get_extero_obs(obs)
@@ -159,23 +159,23 @@ class ActorCritic_wild(nn.Module):
         self.update_distribution(obs_a,obs_e)
         return self.distribution.sample()
 
-    def act_inference(self, obs):
+    def act_inference(self, obs): #TODO NEEDS TO BE MODIFIED
         obs_a = self.get_actor_obs(obs)
         obs_e = self.get_extero_obs(obs)
         return self.actor(obs_a,obs_e)
 
-    def evaluate(self, obs, **kwargs):
+    def evaluate(self, obs, **kwargs): #TODO NEEDS TO BE MODIFIED
         obs = self.get_critic_obs(obs)
         obs = self.critic_obs_normalizer(obs)
         return self.critic(obs)
 
-    def get_actor_obs(self, obs):
+    def get_actor_obs(self, obs): #TODO Inspect and change the method maybe - direct flattening works?
         obs_list = []
         for obs_group in self.obs_groups["policy"]:
             obs_list.append(obs[obs_group])
         return torch.cat(obs_list, dim=-1)
     
-    def get_extero_obs(self,obs):
+    def get_extero_obs(self,obs): 
         obs_list = []
         for obs_group in self.obs_groups["extero"]:
             obs_list.append(obs[obs_group])

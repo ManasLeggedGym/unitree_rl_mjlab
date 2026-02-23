@@ -1,3 +1,16 @@
+## Todos
+- [] Look up the encoder arch in the supplemnentry section and change the teacher model - @asavari [23-02-26]
+- [] Are the rewards different - If yes, modify. - @chirag and @asavari - [23-02-26]
+- [] Check the current OnPoicyRunner implementation - @Om @Mrigaank - [23-02-26 EOD]
+- [] Sort the observations for their respective target networks - Sm prop. goes to actor, some goes to critic etc. -@om @mrigaank [23-02-26]
+- [] Go Through the rest of this updates.md - Use ipdb or pdb to inspect - @all [ideally parallely]
+- [] Train and check - [24-02-26 HD]
+- [] Document all the work done so far - @all
+
+### MJX TODOs
+- [] Port all of the above to Jax - @om and @Mrigaank
+
+
 ## Tracking updates
 - [] Train the Teacher model 
 - [] Update runner and configs to use [actorcritic_wild](mjlab/rsl_rl/modules/actor_critic_wild.py)
@@ -17,12 +30,12 @@
   [x]  Body vel - lin + ang [X]
   [x]  Orientation - [X]
   [x]  Joint position - [X]
-  [x]  Velocty HISTORY - [Can be done from buffer, but then what is sent initially? Empty tensor - mp]
+  []  Velocty HISTORY - [Can be done from buffer, but then what is sent initially? Empty tensor - mp]
   []  ACTION HISTORY - [LAST ACTION AVAILABLE - GET HISTORY FROM BUFFER]
   []  LEG'S PHASE  -   [] 
 
 []  EXTEROCEPTIVE OBSERVATIONS:
-  [x]  Heightmap arond the robot - [X]  [] 
+  [x]  Heightmap arond the robot - [X]   5  DIFFERENT RADII [ignore for now]
 
 []  PRIVIELLGED OBSERVATIONS(CHECK REQUIRED):
   [x]  CONTACT STATES [X]
