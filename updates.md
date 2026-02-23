@@ -6,6 +6,11 @@
 - [] Go Through the rest of this updates.md - Use ipdb or pdb to inspect - @all [ideally parallely]
 - [] Train and check - [24-02-26 HD]
 - [] Document all the work done so far - @all
+- [] Have individual heightmaps surrounding each leg - instead of a global grid.
+## Heat Check after the above have been setup
+- [] Inspect the observation space that goes as input to the network - Data type and Shape
+- [] Are Critic/Actor Networks receiving the right inputs?
+- [] The arch details(for the Teacher MLP/the encoder/decoder) fits the paper description as much as possible.
 
 ### MJX TODOs
 - [] Port all of the above to Jax - @om and @Mrigaank

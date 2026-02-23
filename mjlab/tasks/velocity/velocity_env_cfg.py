@@ -30,75 +30,9 @@ from mjlab.viewer import ViewerConfig
 def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
     """Create base velocity tracking task configuration."""
 
-  ##
-  # Observations
-  ##
-    extero_terms = {
-    "height_map":ObservationTermCfg(
-      func= mdp.height_map,
-      params={"sensor_name": "height_scanner"},
-      noise= Unoise(n_min=-0.07, n_max=0.07)
-    ),
-
-  }
-
-    policy_terms = {
-    "base_ang_vel": ObservationTermCfg(
-      func=mdp.builtin_sensor,
-      params={"sensor_name": "robot/imu_ang_vel"},
-      noise=Unoise(n_min=-0.2, n_max=0.2),
-    ),
-    "projected_gravity": ObservationTermCfg(
-      func=mdp.projected_gravity,
-      noise=Unoise(n_min=-0.05, n_max=0.05),
-    ),
-    "command": ObservationTermCfg(
-      func=mdp.generated_commands,
-      params={"command_name": "twist"},
-    ),
-    "joint_pos": ObservationTermCfg(
-      func=mdp.joint_pos_rel,
-      noise=Unoise(n_min=-0.01, n_max=0.01),
-    ),
-    "joint_vel": ObservationTermCfg(
-      func=mdp.joint_vel_rel,
-      noise=Unoise(n_min=-1.5, n_max=1.5),
-    ),
-    "actions": ObservationTermCfg(func=mdp.last_action),
-    **extero_terms
-  }
-  
-
-    critic_terms = {
-    "base_lin_vel": ObservationTermCfg(
-      func=mdp.builtin_sensor,
-      params={"sensor_name": "robot/imu_lin_vel"},
-    ),
-    "external_forces": ObservationTermCfg(
-      func=mdp.external_forces      
-    ),
-    "pose":ObservationTermCfg(
-      func=mdp.orientation
-    ),
-    
-    "shank_thigh_contact":ObservationTermCfg(
-      func=mdp.shank_thigh_contact,
-      params={"sensor_name": "shank_thigh_contact"}
-    ),
-    "contact_forces": ObservationTermCfg(
-      func=mdp.contact_forces,
-      params={"sensor_name": "feet_ground_contact"},
-    ),
-    "contact_normals": ObservationTermCfg(
-      func=mdp.contact_normals,
-      params={"sensor_name": "feet_ground_contact"},
-    ),
-    **policy_terms,
-    }
     ##
     # Observations
     ##
-
     policy_terms = {
         "base_ang_vel": ObservationTermCfg(
             func=mdp.builtin_sensor,
@@ -132,6 +66,25 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
         ),
     }
 
+    critic_terms = {
+        "base_lin_vel": ObservationTermCfg(
+            func=mdp.builtin_sensor,
+            params={"sensor_name": "robot/imu_lin_vel"},
+        ),
+        "external_forces": ObservationTermCfg(func=mdp.external_forces),
+        "pose": ObservationTermCfg(func=mdp.orientation),
+        "shank_thigh_contact": ObservationTermCfg(
+            func=mdp.shank_thigh_contact, params={"sensor_name": "shank_thigh_contact"}
+        ),
+        "contact_forces": ObservationTermCfg(
+            func=mdp.contact_forces,
+            params={"sensor_name": "feet_ground_contact"},
+        ),
+        "contact_normals": ObservationTermCfg(
+            func=mdp.contact_normals,
+            params={"sensor_name": "feet_ground_contact"},
+        ),
+    }
 
     observations = {
         "policy": ObservationGroupCfg(
