@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Literal, cast
 import tyro
 
-from mjlab.rsl_rl.runners import OnPolicyRunner
+from mjlab.rsl_rl.runners import OnPolicyRunner, OnPolicyRunnerWild
 from mjlab.envs import ManagerBasedRlEnv, ManagerBasedRlEnvCfg
 from mjlab.rl import RslRlOnPolicyRunnerCfg, RslRlVecEnvWrapper
 from mjlab.tasks.registry import list_tasks, load_env_cfg, load_rl_cfg, load_runner_cls
@@ -129,11 +129,14 @@ def run_train(task_id: str, cfg: TrainConfig, log_dir: Path) -> None:
     agent_cfg = asdict(cfg.agent)
     env_cfg = asdict(cfg.env)
 
-    runner_cls = OnPolicyRunner
+    # runner_cls = OnPolicyRunner #! Remember, change here
+    runner_cls = OnPolicyRunnerWild
 
     runner_kwargs = {}
     runner = runner_cls(env, agent_cfg, str(log_dir), device, **runner_kwargs)
 
+    print("The runner was init:")
+    import ipdb; ipdb.set_trace()
     add_wandb_tags(cfg.agent.wandb_tags)
     runner.add_git_repo_to_log(__file__)
     if resume_path is not None:

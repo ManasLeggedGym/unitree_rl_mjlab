@@ -15,7 +15,7 @@ from collections import deque
 import rsl_rl
 from mjlab.rsl_rl.algorithms import PPO
 from mjlab.rsl_rl.env import VecEnv
-from mjlab.rsl_rl.modules import ActorCritic, ActorCriticRecurrent, resolve_rnd_config, resolve_symmetry_config, ActorCritic_wild
+from mjlab.rsl_rl.modules import ActorCritic, ActorCriticRecurrent, ActorCritic_wild, resolve_rnd_config, resolve_symmetry_config
 from mjlab.rsl_rl.utils import resolve_obs_groups, store_code_state
 from mjlab.rsl_rl.utils.exporter import export_policy_as_jit, export_policy_as_onnx
 
@@ -58,6 +58,8 @@ class OnPolicyRunnerWild:
         self.tot_time = 0
         self.current_learning_iteration = 0
         self.git_status_repos = [rsl_rl.__file__]
+        print("The OnPolicyRunner has been init:")
+        import ipdb; ipdb.set_trace()
 
     def learn(self, num_learning_iterations: int, init_at_random_ep_len: bool = False):  # noqa: C901
         # initialize writer
@@ -437,7 +439,7 @@ class OnPolicyRunnerWild:
 
         # initialize the actor-critic
         actor_critic_class = eval(self.policy_cfg.pop("class_name"))
-        actor_critic: ActorCritic_wild | ActorCriticRecurrent = actor_critic_class(
+        actor_critic: ActorCritic_wild | ActorCriticRecurrent = actor_critic_class(  #* THe OR symbol is basically type checking, we need to add ActorCritic_Wild
             obs, self.cfg["obs_groups"], self.env.num_actions, **self.policy_cfg
         ).to(self.device)
 
