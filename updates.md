@@ -47,7 +47,7 @@ STEP 3: add the declare the sensor function in [observations](mjlab/tasks/veloci
 
 STEP 4: add the sensor function to the [observation file](mjlab/tasks/velocity/velocity_env_cfg.py), keep track of the sensor name declared in step 2.
 
-### Adding observations from the robot 
+### Instructions om adding observations from the robot 
 STEP 0: Identify the right [task](mjlab/tasks).
 
 STEP 1: Make a function in the [observations](mjlab/tasks/velocity/mdp/observations.py) that takes in the env and returns the required data from the robot entity
