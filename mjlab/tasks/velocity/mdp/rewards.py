@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import torch
+import ipdb
 
 from mjlab.entity import Entity
 from mjlab.managers.reward_manager import RewardTermCfg
@@ -243,35 +244,137 @@ class feet_swing_height:
     return cost
 
 
+# def feet_slip(
+#   env: ManagerBasedRlEnv,
+#   sensor_name: str,
+#   command_name: str,
+#   command_threshold: float = 0.01,
+#   asset_cfg: SceneEntityCfg = _DEFAULT_ASSET_CFG,
+# ) -> torch.Tensor:
+#   """Penalize foot sliding (xy velocity while in contact)."""
+#   asset: Entity = env.scene[asset_cfg.name]
+#   contact_sensor: ContactSensor = env.scene[sensor_name]
+#   command = env.command_manager.get_command(command_name)
+#   assert command is not None
+#   linear_norm = torch.norm(command[:, :2], dim=1)
+#   angular_norm = torch.abs(command[:, 2])
+#   total_command = linear_norm + angular_norm
+#   active = (total_command > command_threshold).float()
+#   assert contact_sensor.data.found is not None
+#   in_contact = (contact_sensor.data.found > 0).float()  # [B, N]
+#   foot_vel_xy = asset.data.site_lin_vel_w[:, asset_cfg.site_ids, :2]  # [B, N, 2]
+#   vel_xy_norm = torch.norm(foot_vel_xy, dim=-1)  # [B, N]
+#   vel_xy_norm_sq = torch.square(vel_xy_norm)  # [B, N]
+#   cost = torch.sum(vel_xy_norm_sq * in_contact, dim=1) * active
+#   num_in_contact = torch.sum(in_contact)
+#   mean_slip_vel = torch.sum(torch.sqrt(vel_xy_norm) * in_contact) / torch.clamp(
+#     num_in_contact, min=1
+#   )
+#   env.extras["log"]["Metrics/slip_velocity_mean"] = mean_slip_vel
+#   return cost
+
+"""Rewards having Curriculum Factor"""
+
 def feet_slip(
   env: ManagerBasedRlEnv,
   sensor_name: str,
-  command_name: str,
-  command_threshold: float = 0.01,
   asset_cfg: SceneEntityCfg = _DEFAULT_ASSET_CFG,
 ) -> torch.Tensor:
+  
   """Penalize foot sliding (xy velocity while in contact)."""
+
   asset: Entity = env.scene[asset_cfg.name]
   contact_sensor: ContactSensor = env.scene[sensor_name]
-  command = env.command_manager.get_command(command_name)
-  assert command is not None
-  linear_norm = torch.norm(command[:, :2], dim=1)
-  angular_norm = torch.abs(command[:, 2])
-  total_command = linear_norm + angular_norm
-  active = (total_command > command_threshold).float()
-  assert contact_sensor.data.found is not None
+
   in_contact = (contact_sensor.data.found > 0).float()  # [B, N]
   foot_vel_xy = asset.data.site_lin_vel_w[:, asset_cfg.site_ids, :2]  # [B, N, 2]
-  vel_xy_norm = torch.norm(foot_vel_xy, dim=-1)  # [B, N]
-  vel_xy_norm_sq = torch.square(vel_xy_norm)  # [B, N]
-  cost = torch.sum(vel_xy_norm_sq * in_contact, dim=1) * active
-  num_in_contact = torch.sum(in_contact)
-  mean_slip_vel = torch.sum(vel_xy_norm * in_contact) / torch.clamp(
-    num_in_contact, min=1
-  )
-  env.extras["log"]["Metrics/slip_velocity_mean"] = mean_slip_vel
-  return cost
 
+  vel_sq = torch.sum(foot_vel_xy ** 2, dim=-1)
+  slip_sum = torch.sum(vel_sq * in_contact, dim=1)
+
+  return slip_sum
+
+def joint_torque_l2(
+    env:ManagerBasedRlEnv,
+    asset_cfg: SceneEntityCfg = _DEFAULT_ASSET_CFG,
+) -> torch.Tensor:
+  
+  """Torque penalty"""
+  asset: Entity = env.scene[asset_cfg.name]
+  torques = asset.data.joint_torques
+
+  torque_sq = torch.square(torques)
+  return torch.sum(torque_sq, dim=1)
+
+def target_smoothness_l2(
+   env:ManagerBasedRlEnv,
+    asset_cfg: SceneEntityCfg = _DEFAULT_ASSET_CFG,
+) -> torch.Tensor:  
+  
+  """Penalize first and second finite differences of desired joint targets"""
+  q_t = env.action_manager.action  # [B, D]
+
+  q_t1 = env.action_manager.last_action  # [B, D]
+
+  if not hasattr(env, "_prev_prev_action"):
+    env._prev_prev_action = torch.zeros_like(q_t1)
+
+  q_t2 = env._prev_prev_action  # [B, D]
+
+  first_diff = q_t - q_t1
+  second_diff = q_t - 2 * q_t1 + q_t2
+
+  env._prev_prev_action = q_t1.clone()
+
+  return torch.sum(first_diff**2 + second_diff**2, dim=1)
+
+def joint_constraint_l2(
+    env: ManagerBasedRlEnv,
+    threshold: float,
+    asset_cfg: SceneEntityCfg,
+) -> torch.Tensor:
+    
+    """Soft joint constraint"""
+
+    asset: Entity = env.scene[asset_cfg.name]
+
+    q = asset.data.joint_pos[:, asset_cfg.joint_ids]
+
+    violation = torch.clamp(q - threshold, min=0.0)
+
+    cost = torch.sum(violation ** 2, dim=1)
+
+    return cost
+
+def shank_knee_collision(
+    env: ManagerBasedRlEnv,
+    sensor_name: str,
+) -> torch.Tensor:
+    """Penalize collision of shank or knee with terrain"""
+
+    contact_sensor: ContactSensor = env.scene[sensor_name]
+    in_contact = contact_sensor.data.found > 0
+
+    collision = torch.any(in_contact, dim=1).float()
+
+    return collision
+
+def joint_motion_l2(
+    env: ManagerBasedRlEnv,
+    asset_cfg: SceneEntityCfg = _DEFAULT_ASSET_CFG,
+) -> torch.Tensor:
+    """ Penalize joint velocity and acceleration"""
+
+    asset: Entity = env.scene[asset_cfg.name]
+
+    q_dot = asset.data.joint_vel  # [B, D]
+    q_ddot = asset.data.joint_acc  # [B, D]
+
+    cost = torch.sum(
+        0.01*q_dot**2+q_ddot**2,
+        dim=1,
+    )
+    return cost
 
 def soft_landing(
   env: ManagerBasedRlEnv,

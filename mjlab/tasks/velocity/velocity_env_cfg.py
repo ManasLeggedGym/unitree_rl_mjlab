@@ -333,13 +333,43 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
         ),
         "foot_slip": RewardTermCfg(
             func=mdp.feet_slip,
-            weight=-0.25,
+            weight=0.0,
             params={
                 "sensor_name": "feet_ground_contact",
-                "command_name": "twist",
-                "command_threshold": 0.1,
+                # "command_name": "twist",
+                # "command_threshold": 0.1,
                 "asset_cfg": SceneEntityCfg("robot", site_names=()),  # Set per-robot.
             },
+        ),
+        "joint_torque_l2": RewardTermCfg(
+            func=mdp.joint_torque_l2,
+            weight=0.0,
+        ),
+        "target_smoothness": RewardTermCfg(
+            func=mdp.target_smoothness_l2,
+            weight=0.0,
+        ),
+        "joint_constraint": RewardTermCfg(
+            func=mdp.joint_constraint_l2,
+            weight=-5.0,
+            params={
+                "threshold": 0.0,
+                "asset_cfg": SceneEntityCfg(
+                    "robot",
+                    joint_names=".*calf_joint",
+                ),
+            },
+        ),
+        "shank_knee_collision": RewardTermCfg(
+            func=mdp.shank_knee_collision,
+            weight=0.0,
+            params={
+                "sensor_name": "shank_thigh_contact",
+            },
+        ),
+        "joint_motion": RewardTermCfg(
+            func=mdp.joint_motion_l2,
+            weight=0.0,
         ),
         "soft_landing": RewardTermCfg(
             func=mdp.soft_landing,
@@ -399,6 +429,61 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
                         "lin_vel_y": (-1.0, 1.0),
                     },
                     # {"step": 10000 * 24, "lin_vel_x": (-1.5, 3.0)},
+                ],
+            },
+        ),
+        "foot_slip": CurriculumTermCfg(
+            func=mdp.reward_weight,
+            params={
+                "reward_name": "foot_slip",
+                "weight_stages": [
+                    {"step": 0, "weight": 0.0},        # no slip penalty initially
+                    {"step": 2000 * 24, "weight": -0.1},
+                    {"step": 5000 * 24, "weight": -0.25},
+                ],
+            },
+        ),
+        "joint_torque_l2": CurriculumTermCfg(
+            func=mdp.reward_weight,
+            params={
+                "reward_name": "joint_torque_l2",
+                "weight_stages": [
+                    {"step": 0, "weight": 0.0},
+                    {"step": 2000 * 24, "weight": -1e-5},
+                    {"step": 5000 * 24, "weight": -2e-5},
+                ],
+            },
+        ),
+        "target_smoothness": CurriculumTermCfg(
+            func=mdp.reward_weight,
+            params={
+                "reward_name": "target_smoothness",
+                "weight_stages": [
+                    {"step": 0, "weight": 0.0},
+                    {"step": 2000 * 24, "weight": -1e-3},
+                    {"step": 5000 * 24, "weight": -5e-3},
+                ],
+            },
+        ),
+        "shank_knee_collision": CurriculumTermCfg(
+            func=mdp.reward_weight,
+            params={
+                "reward_name": "shank_knee_collision",
+                "weight_stages": [
+                    {"step": 0, "weight": 0.0},
+                    {"step": 2000 * 24, "weight": -0.5},
+                    {"step": 5000 * 24, "weight": -1.0},
+                ],
+            },
+        ),  
+        "joint_motion": CurriculumTermCfg(
+            func=mdp.reward_weight,
+            params={
+                "reward_name": "joint_motion",
+                "weight_stages": [
+                    {"step": 0, "weight": 0.0},
+                    {"step": 2000 * 24, "weight": -1e-4},
+                    {"step": 5000 * 24, "weight": -5e-4},
                 ],
             },
         ),
