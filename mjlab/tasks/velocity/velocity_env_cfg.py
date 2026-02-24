@@ -4,6 +4,7 @@ This module provides a factory function to create a base velocity task config.
 Robot-specific configurations call the factory and customize as needed.
 """
 
+
 import math
 from dataclasses import replace
 
@@ -34,18 +35,22 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
     # Observations
     ##
     policy_terms = {
-        "base_ang_vel": ObservationTermCfg(
-            func=mdp.builtin_sensor,
-            params={"sensor_name": "robot/imu_ang_vel"},
-            noise=Unoise(n_min=-0.2, n_max=0.2),
-        ),
-        "projected_gravity": ObservationTermCfg(
-            func=mdp.projected_gravity,
-            noise=Unoise(n_min=-0.05, n_max=0.05),
-        ),
+        # "base_ang_vel": ObservationTermCfg(
+        #     func=mdp.builtin_sensor,
+        #     params={"sensor_name": "robot/imu_ang_vel"},
+        #     noise=Unoise(n_min=-0.2, n_max=0.2),
+        # ),
         "command": ObservationTermCfg(
             func=mdp.generated_commands,
             params={"command_name": "twist"},
+        ),
+        "body_observation": ObservationTermCfg(
+            func=mdp.projected_gravity,
+            noise=Unoise(n_min=-0.05, n_max=0.05),
+        ),
+        "body_velocity": ObservationTermCfg(
+            func=mdp.body_velocity,
+                        noise=Unoise(n_min=-0.05, n_max=0.05),
         ),
         "joint_pos": ObservationTermCfg(
             func=mdp.joint_pos_rel,
@@ -55,7 +60,21 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
             func=mdp.joint_vel_rel,
             noise=Unoise(n_min=-1.5, n_max=1.5),
         ),
-        "actions": ObservationTermCfg(func=mdp.last_action),
+        "joint_pos_history": ObservationTermCfg(
+            func=mdp.joint_pos_rel,
+            noise=Unoise(n_min=-0.01, n_max=0.01),
+            history_length=3
+        ),
+        "joint_vel_history": ObservationTermCfg(
+            func=mdp.joint_vel_rel,
+            noise=Unoise(n_min=-1.5, n_max=1.5),
+            history_length=2
+        ),
+        "joint_target_history": ObservationTermCfg(
+            func=mdp.last_action,
+            history_length=2
+        ),
+        
     }
 
     extero_terms = {
@@ -91,7 +110,7 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
             terms=policy_terms,
             concatenate_terms=True,
             enable_corruption=True,
-            history_length=1,
+            # history_length=1,
         ),
         "critic": ObservationGroupCfg(
             terms=critic_terms,

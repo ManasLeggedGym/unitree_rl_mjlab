@@ -35,8 +35,8 @@
   [x]  Body vel - lin + ang [X]
   [x]  Orientation - [X]
   [x]  Joint position - [X]
-  []  Velocty HISTORY - [Can be done from buffer, but then what is sent initially? Empty tensor - mp]
-  []  ACTION HISTORY - [LAST ACTION AVAILABLE - GET HISTORY FROM BUFFER]
+  [x]  Velocty HISTORY - [Can be done from buffer, but then what is sent initially? Empty tensor - mp]
+  [x]  ACTION HISTORY - [LAST ACTION AVAILABLE - GET HISTORY FROM BUFFER]
   []  LEG'S PHASE  -   [] 
 
 []  EXTEROCEPTIVE OBSERVATIONS:
