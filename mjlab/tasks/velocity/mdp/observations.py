@@ -8,6 +8,8 @@ import pdb
 from mjlab.entity import Entity
 from mjlab.managers.scene_entity_config import SceneEntityCfg
 from mjlab.sensor import ContactSensor, RayCastSensor, BuiltinSensor
+from scipy.spatial.transform import Rotation as R
+import numpy as np
 
 if TYPE_CHECKING:
   from mjlab.envs import ManagerBasedRlEnv
@@ -178,3 +180,25 @@ def body_velocity(env: ManagerBasedRlEnv):
   robot = env.scene.entities["robot"]
   assert robot.data.root_link_vel_w is not None
   return robot.data.root_link_vel_w
+
+
+def quat_to_rpy_scipy(quat: torch.Tensor):
+    """
+    quat: (N, 4) tensor in (w, x, y, z)
+    returns: (N, 3) tensor (roll, pitch, yaw) in radians
+    """
+
+    q_np = quat.detach().cpu().numpy()
+
+    q_scipy = np.column_stack((q_np[:, 1], q_np[:, 2], q_np[:, 3], q_np[:, 0]))
+
+    r = R.from_quat(q_scipy)
+
+    rpy = r.as_euler('xyz', degrees=False)
+
+    return torch.from_numpy(rpy).to(quat.device)
+
+def body_orientation(env: ManagerBasedRlEnv):
+  robot = env.scene.entities["robot"]
+  assert robot.data.root_link_pos_w is not None
+  return robot.data.root_link_pos_w

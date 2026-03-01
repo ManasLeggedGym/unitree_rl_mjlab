@@ -43,7 +43,8 @@ class OnPolicyRunnerWild:
 
         # store training configuration
         self.num_steps_per_env = self.cfg["num_steps_per_env"]
-        self.save_interval = self.cfg["save_interval"]
+        # self.save_interval = self.cfg["save_interval"]
+        self.save_interval = 1
 
         # query observations from environment for algorithm construction
         obs = self.env.get_observations()

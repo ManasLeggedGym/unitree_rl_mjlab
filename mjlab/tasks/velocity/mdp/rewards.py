@@ -75,7 +75,6 @@ def track_angular_velocity(
   reward[mask_else] = torch.exp(
       -(w[mask_else] - w_des[mask_else]) ** 2
   )
-  print(f"angular: {reward}")
   return reward
 
 def linear_orthogonal(
