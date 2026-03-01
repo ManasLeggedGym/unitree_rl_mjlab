@@ -1,6 +1,6 @@
 ## Todos
 - [] Look up the encoder arch in the supplemnentry section and change the teacher model - @asavari [23-02-26]
-- [] Are the rewards different - If yes, modify. - @chirag and @asavari - [23-02-26]
+- [x] Are the rewards different - If yes, modify. - @chirag and @asavari - [23-02-26]
 - [] Check the current OnPoicyRunner implementation - @Om @Mrigaank - [23-02-26 EOD]
 - [] Sort the observations for their respective target networks - Sm prop. goes to actor, some goes to critic etc. -@om @mrigaank [23-02-26]
 - [] Go Through the rest of this updates.md - Use ipdb or pdb to inspect - @all [ideally parallely]
