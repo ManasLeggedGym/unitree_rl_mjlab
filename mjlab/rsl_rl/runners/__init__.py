@@ -6,6 +6,7 @@
 """Implementation of runners for environment-agent interaction."""
 
 from .on_policy_runner import OnPolicyRunner  # isort:skip
+from .on_policy_runner_wild import OnPolicyRunnerWild
 from .distillation_runner import DistillationRunner
 
 __all__ = ["OnPolicyRunner", "DistillationRunner"]

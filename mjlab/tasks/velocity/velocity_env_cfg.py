@@ -4,6 +4,7 @@ This module provides a factory function to create a base velocity task config.
 Robot-specific configurations call the factory and customize as needed.
 """
 
+
 import math
 from dataclasses import replace
 
@@ -38,96 +39,87 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
       func= mdp.height_map,
       params={"sensor_name": "height_scanner"},
       noise= Unoise(n_min=-0.07, n_max=0.07)
-    ),  
+    ),
+
   }
 
     policy_terms = {
-    "base_ang_vel": ObservationTermCfg(
-      func=mdp.builtin_sensor,
-      params={"sensor_name": "robot/imu_ang_vel"},
-      noise=Unoise(n_min=-0.2, n_max=0.2),
-    ),
-    "projected_gravity": ObservationTermCfg(
-      func=mdp.projected_gravity,
-      noise=Unoise(n_min=-0.05, n_max=0.05),
-    ),
-    "command": ObservationTermCfg(
-      func=mdp.generated_commands,
-      params={"command_name": "twist"},
-    ),
-    "joint_pos": ObservationTermCfg(
-      func=mdp.joint_pos_rel,
-      noise=Unoise(n_min=-0.01, n_max=0.01),
-    ),
-    "joint_vel": ObservationTermCfg(
-      func=mdp.joint_vel_rel,
-      noise=Unoise(n_min=-1.5, n_max=1.5),
-    ),
-    "actions": ObservationTermCfg(func=mdp.last_action),
-    **extero_terms
-  }
-  
+        # "base_ang_vel": ObservationTermCfg(
+        #     func=mdp.builtin_sensor,
+        #     params={"sensor_name": "robot/imu_ang_vel"},
+        #     noise=Unoise(n_min=-0.2, n_max=0.2),
+        # ),
+        "command": ObservationTermCfg(
+            func=mdp.generated_commands,
+            params={"command_name": "twist"},
+        ),
+        "body_observation": ObservationTermCfg(
+            func=mdp.projected_gravity,
+            noise=Unoise(n_min=-0.05, n_max=0.05),
+        ),
+        "body_velocity": ObservationTermCfg(
+            func=mdp.body_velocity,
+                        noise=Unoise(n_min=-0.05, n_max=0.05),
+        ),
+        "joint_pos": ObservationTermCfg(
+            func=mdp.joint_pos_rel,
+            noise=Unoise(n_min=-0.01, n_max=0.01),
+        ),
+        "joint_vel": ObservationTermCfg(
+            func=mdp.joint_vel_rel,
+            noise=Unoise(n_min=-1.5, n_max=1.5),
+        ),
+        "joint_pos_history": ObservationTermCfg(
+            func=mdp.joint_pos_rel,
+            noise=Unoise(n_min=-0.01, n_max=0.01),
+            history_length=3
+        ),
+        "joint_vel_history": ObservationTermCfg(
+            func=mdp.joint_vel_rel,
+            noise=Unoise(n_min=-1.5, n_max=1.5),
+            history_length=2
+        ),
+        "joint_target_history": ObservationTermCfg(
+            func=mdp.last_action,
+            history_length=2
+        ),
+        
+    }
+
+    extero_terms = {
+        "height_map": ObservationTermCfg(
+            func=mdp.height_map,
+            params={"sensor_name": "height_scanner"},
+            noise=Unoise(n_min=-0.07, n_max=0.07),
+        ),
+    }
 
     critic_terms = {
-    "base_lin_vel": ObservationTermCfg(
-      func=mdp.builtin_sensor,
-      params={"sensor_name": "robot/imu_lin_vel"},
-    ),
-    "external_forces": ObservationTermCfg(
-      func=mdp.external_forces      
-    ),
-    "pose":ObservationTermCfg(
-      func=mdp.orientation
-    ),
-    
-    "shank_thigh_contact":ObservationTermCfg(
-      func=mdp.shank_thigh_contact,
-      params={"sensor_name": "shank_thigh_contact"}
-    ),
-    "contact_forces": ObservationTermCfg(
-      func=mdp.contact_forces,
-      params={"sensor_name": "feet_ground_contact"},
-    ),
-    "contact_normals": ObservationTermCfg(
-      func=mdp.contact_normals,
-      params={"sensor_name": "feet_ground_contact"},
-    ),
-    **policy_terms,
+        "base_lin_vel": ObservationTermCfg(
+            func=mdp.builtin_sensor,
+            params={"sensor_name": "robot/imu_lin_vel"},
+        ),
+        "external_forces": ObservationTermCfg(func=mdp.external_forces),
+        "pose": ObservationTermCfg(func=mdp.orientation),
+        "shank_thigh_contact": ObservationTermCfg(
+            func=mdp.shank_thigh_contact, params={"sensor_name": "shank_thigh_contact"}
+        ),
+        "contact_forces": ObservationTermCfg(
+            func=mdp.contact_forces,
+            params={"sensor_name": "feet_ground_contact"},
+        ),
+        "contact_normals": ObservationTermCfg(
+            func=mdp.contact_normals,
+            params={"sensor_name": "feet_ground_contact"},
+        ),
     }
-    ##
-    # Observations
-    ##
 
-    # policy_terms = {
-    #     "base_ang_vel": ObservationTermCfg(
-    #         func=mdp.builtin_sensor,
-    #         params={"sensor_name": "robot/imu_ang_vel"},
-    #         noise=Unoise(n_min=-0.2, n_max=0.2),
-    #     ),
-    #     "projected_gravity": ObservationTermCfg(
-    #         func=mdp.projected_gravity,
-    #         noise=Unoise(n_min=-0.05, n_max=0.05),
-    #     ),
-    #     "command": ObservationTermCfg(
-    #         func=mdp.generated_commands,
-    #         params={"command_name": "twist"},
-    #     ),
-    #     "joint_pos": ObservationTermCfg(
-    #         func=mdp.joint_pos_rel,
-    #         noise=Unoise(n_min=-0.01, n_max=0.01),
-    #     ),
-    #     "joint_vel": ObservationTermCfg(
-    #         func=mdp.joint_vel_rel,
-    #         noise=Unoise(n_min=-1.5, n_max=1.5),
-    #     ),
-    #     "actions": ObservationTermCfg(func=mdp.last_action),
-    # }
     observations = {
         "policy": ObservationGroupCfg(
             terms=policy_terms,
             concatenate_terms=True,
             enable_corruption=True,
-            history_length=1,
+            # history_length=1,
         ),
         "critic": ObservationGroupCfg(
             terms=critic_terms,
@@ -325,13 +317,43 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
         ),
         "foot_slip": RewardTermCfg(
             func=mdp.feet_slip,
-            weight=-0.25,
+            weight=0.0,
             params={
                 "sensor_name": "feet_ground_contact",
-                "command_name": "twist",
-                "command_threshold": 0.1,
+                # "command_name": "twist",
+                # "command_threshold": 0.1,
                 "asset_cfg": SceneEntityCfg("robot", site_names=()),  # Set per-robot.
             },
+        ),
+        "joint_torque_l2": RewardTermCfg(
+            func=mdp.joint_torque_l2,
+            weight=0.0,
+        ),
+        "target_smoothness": RewardTermCfg(
+            func=mdp.target_smoothness_l2,
+            weight=0.0,
+        ),
+        "joint_constraint": RewardTermCfg(
+            func=mdp.joint_constraint_l2,
+            weight=-5.0,
+            params={
+                "threshold": 0.0,
+                "asset_cfg": SceneEntityCfg(
+                    "robot",
+                    joint_names=".*calf_joint",
+                ),
+            },
+        ),
+        "shank_knee_collision": RewardTermCfg(
+            func=mdp.shank_knee_collision,
+            weight=0.0,
+            params={
+                "sensor_name": "shank_thigh_contact",
+            },
+        ),
+        "joint_motion": RewardTermCfg(
+            func=mdp.joint_motion_l2,
+            weight=0.0,
         ),
         "soft_landing": RewardTermCfg(
             func=mdp.soft_landing,
@@ -391,6 +413,61 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
                         "lin_vel_y": (-1.0, 1.0),
                     },
                     # {"step": 10000 * 24, "lin_vel_x": (-1.5, 3.0)},
+                ],
+            },
+        ),
+        "foot_slip": CurriculumTermCfg(
+            func=mdp.reward_weight,
+            params={
+                "reward_name": "foot_slip",
+                "weight_stages": [
+                    {"step": 0, "weight": 0.0},        # no slip penalty initially
+                    {"step": 2000 * 24, "weight": -0.1},
+                    {"step": 5000 * 24, "weight": -0.25},
+                ],
+            },
+        ),
+        "joint_torque_l2": CurriculumTermCfg(
+            func=mdp.reward_weight,
+            params={
+                "reward_name": "joint_torque_l2",
+                "weight_stages": [
+                    {"step": 0, "weight": 0.0},
+                    {"step": 2000 * 24, "weight": -1e-5},
+                    {"step": 5000 * 24, "weight": -2e-5},
+                ],
+            },
+        ),
+        "target_smoothness": CurriculumTermCfg(
+            func=mdp.reward_weight,
+            params={
+                "reward_name": "target_smoothness",
+                "weight_stages": [
+                    {"step": 0, "weight": 0.0},
+                    {"step": 2000 * 24, "weight": -1e-3},
+                    {"step": 5000 * 24, "weight": -5e-3},
+                ],
+            },
+        ),
+        "shank_knee_collision": CurriculumTermCfg(
+            func=mdp.reward_weight,
+            params={
+                "reward_name": "shank_knee_collision",
+                "weight_stages": [
+                    {"step": 0, "weight": 0.0},
+                    {"step": 2000 * 24, "weight": -0.5},
+                    {"step": 5000 * 24, "weight": -1.0},
+                ],
+            },
+        ),  
+        "joint_motion": CurriculumTermCfg(
+            func=mdp.reward_weight,
+            params={
+                "reward_name": "joint_motion",
+                "weight_stages": [
+                    {"step": 0, "weight": 0.0},
+                    {"step": 2000 * 24, "weight": -1e-4},
+                    {"step": 5000 * 24, "weight": -5e-4},
                 ],
             },
         ),

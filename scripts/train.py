@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Literal, cast
 import tyro
 
-from mjlab.rsl_rl.runners import OnPolicyRunner
+from mjlab.rsl_rl.runners import OnPolicyRunner, OnPolicyRunnerWild
 from mjlab.envs import ManagerBasedRlEnv, ManagerBasedRlEnvCfg
 from mjlab.rl import RslRlOnPolicyRunnerCfg, RslRlVecEnvWrapper
 from mjlab.tasks.registry import list_tasks, load_env_cfg, load_rl_cfg, load_runner_cls
@@ -62,9 +62,8 @@ def run_train(task_id: str, cfg: TrainConfig, log_dir: Path) -> None:
 
     print(f"[INFO] Training with: device={device}, seed={seed}, rank={rank}")
 
-    is_tracking_task = (
-        "motion" in cfg.env.commands
-        and isinstance(cfg.env.commands["motion"], MotionCommandCfg)
+    is_tracking_task = "motion" in cfg.env.commands and isinstance(
+        cfg.env.commands["motion"], MotionCommandCfg
     )
 
     if is_tracking_task:
@@ -82,7 +81,9 @@ def run_train(task_id: str, cfg: TrainConfig, log_dir: Path) -> None:
 
     if cfg.enable_nan_guard:
         cfg.env.sim.nan_guard.enabled = True
-        print(f"[INFO] NaN guard enabled, output dir: {cfg.env.sim.nan_guard.output_dir}")
+        print(
+            f"[INFO] NaN guard enabled, output dir: {cfg.env.sim.nan_guard.output_dir}"
+        )
 
     if rank == 0:
         print(f"[INFO] Logging experiment in directory: {log_dir}")
@@ -129,11 +130,13 @@ def run_train(task_id: str, cfg: TrainConfig, log_dir: Path) -> None:
     agent_cfg = asdict(cfg.agent)
     env_cfg = asdict(cfg.env)
 
-    runner_cls = OnPolicyRunner
+    # runner_cls = OnPolicyRunner #! Remember, change here
+    runner_cls = OnPolicyRunnerWild
 
     runner_kwargs = {}
     runner = runner_cls(env, agent_cfg, str(log_dir), device, **runner_kwargs)
 
+    print("The runner was init:")
     add_wandb_tags(cfg.agent.wandb_tags)
     runner.add_git_repo_to_log(__file__)
     if resume_path is not None:
@@ -146,9 +149,9 @@ def run_train(task_id: str, cfg: TrainConfig, log_dir: Path) -> None:
         
     # import ipdb; ipdb.set_trace()
     
+
     runner.learn(
-        num_learning_iterations=cfg.agent.max_iterations,
-        init_at_random_ep_len=True
+        num_learning_iterations=cfg.agent.max_iterations, init_at_random_ep_len=True
     )
 
     env.close()

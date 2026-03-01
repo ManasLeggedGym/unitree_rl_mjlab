@@ -173,3 +173,8 @@ def terrain_geom_friction(env: ManagerBasedRlEnv, asset_cfg: SceneEntityCfg = _D
   # Select only this entity's geoms and flatten last two dims
   vals = model_field[:, geom_ids, :]
   return vals.flatten(start_dim=1)
+
+def body_velocity(env: ManagerBasedRlEnv):
+  robot = env.scene.entities["robot"]
+  assert robot.data.root_link_vel_w is not None
+  return robot.data.root_link_vel_w
