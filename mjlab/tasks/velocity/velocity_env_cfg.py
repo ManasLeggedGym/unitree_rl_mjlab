@@ -38,8 +38,7 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
       func= mdp.height_map,
       params={"sensor_name": "height_scanner"},
       noise= Unoise(n_min=-0.07, n_max=0.07)
-    ),
-
+    ),  
   }
 
     policy_terms = {
@@ -99,40 +98,30 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
     # Observations
     ##
 
-    policy_terms = {
-        "base_ang_vel": ObservationTermCfg(
-            func=mdp.builtin_sensor,
-            params={"sensor_name": "robot/imu_ang_vel"},
-            noise=Unoise(n_min=-0.2, n_max=0.2),
-        ),
-        "projected_gravity": ObservationTermCfg(
-            func=mdp.projected_gravity,
-            noise=Unoise(n_min=-0.05, n_max=0.05),
-        ),
-        "command": ObservationTermCfg(
-            func=mdp.generated_commands,
-            params={"command_name": "twist"},
-        ),
-        "joint_pos": ObservationTermCfg(
-            func=mdp.joint_pos_rel,
-            noise=Unoise(n_min=-0.01, n_max=0.01),
-        ),
-        "joint_vel": ObservationTermCfg(
-            func=mdp.joint_vel_rel,
-            noise=Unoise(n_min=-1.5, n_max=1.5),
-        ),
-        "actions": ObservationTermCfg(func=mdp.last_action),
-    }
-
-    extero_terms = {
-        "height_map": ObservationTermCfg(
-            func=mdp.height_map,
-            params={"sensor_name": "height_scanner"},
-            noise=Unoise(n_min=-0.07, n_max=0.07),
-        ),
-    }
-
-
+    # policy_terms = {
+    #     "base_ang_vel": ObservationTermCfg(
+    #         func=mdp.builtin_sensor,
+    #         params={"sensor_name": "robot/imu_ang_vel"},
+    #         noise=Unoise(n_min=-0.2, n_max=0.2),
+    #     ),
+    #     "projected_gravity": ObservationTermCfg(
+    #         func=mdp.projected_gravity,
+    #         noise=Unoise(n_min=-0.05, n_max=0.05),
+    #     ),
+    #     "command": ObservationTermCfg(
+    #         func=mdp.generated_commands,
+    #         params={"command_name": "twist"},
+    #     ),
+    #     "joint_pos": ObservationTermCfg(
+    #         func=mdp.joint_pos_rel,
+    #         noise=Unoise(n_min=-0.01, n_max=0.01),
+    #     ),
+    #     "joint_vel": ObservationTermCfg(
+    #         func=mdp.joint_vel_rel,
+    #         noise=Unoise(n_min=-1.5, n_max=1.5),
+    #     ),
+    #     "actions": ObservationTermCfg(func=mdp.last_action),
+    # }
     observations = {
         "policy": ObservationGroupCfg(
             terms=policy_terms,
@@ -273,13 +262,22 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
     rewards = {
         "track_linear_velocity": RewardTermCfg(
             func=mdp.track_linear_velocity,
-            weight=1.0,
+            weight=0.75,
             params={"command_name": "twist"},
         ),
         "track_angular_velocity": RewardTermCfg(
             func=mdp.track_angular_velocity,
-            weight=1.0,
+            weight=0.75,
             params={"command_name": "twist"},
+        ),
+        "Linear_orthogonal_vel": RewardTermCfg(
+            func=mdp.linear_orthogonal,
+            weight=0.75,
+            params={"command_name": "twist"},
+        ),
+        "body_motion": RewardTermCfg(
+            func=mdp.body_motion_reward,
+            weight= 1.0
         ),
         "flat_orientation_l2": RewardTermCfg(func=mdp.flat_orientation_l2, weight=-5.0),
         "pose": RewardTermCfg(
@@ -321,15 +319,9 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
                 "command_threshold": 0.1,
             },
         ),
-        "foot_clearance": RewardTermCfg(
-            func=mdp.feet_clearance,
-            weight=-1.0,
-            params={
-                "target_height": 0.12,
-                "command_name": "twist",
-                "command_threshold": 0.1,
-                "asset_cfg": SceneEntityCfg("robot", site_names=()),  # Set per-robot.
-            },
+        "feet_terrain_clearence": RewardTermCfg(
+            func=mdp.feet_terrain_clearence,
+            weight= 1.0,
         ),
         "foot_slip": RewardTermCfg(
             func=mdp.feet_slip,

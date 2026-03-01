@@ -105,7 +105,7 @@ def unitree_g1_23dof_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     r".*wrist.*": 0.1,
   }
   cfg.rewards["body_ang_vel"].params["asset_cfg"].body_names = ("torso_link",)
-  cfg.rewards["foot_clearance"].params["asset_cfg"].site_names = site_names
+  # cfg.rewards["foot_clearance"].params["asset_cfg"].site_names = site_names
   cfg.rewards["foot_slip"].params["asset_cfg"].site_names = site_names
   cfg.rewards["self_collisions"] = RewardTermCfg(
     func=mdp.self_collision_cost,

@@ -95,7 +95,7 @@ def unitree_go2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
             normal_color=(1, 1, 0, 1),     # Yellow normals
         ),
   )
-
+  
 
   cfg.scene.sensors = (feet_ground_cfg, nonfoot_ground_cfg,height_scanner_cfg,shank_thigh_contact_cfg)
   
@@ -130,7 +130,7 @@ def unitree_go2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     r".*(FR|FL|RR|RL)_calf_joint.*": 0.5,
   }
   cfg.rewards["body_ang_vel"].params["asset_cfg"].body_names = ("base_link",)
-  cfg.rewards["foot_clearance"].params["asset_cfg"].site_names = site_names
+  # cfg.rewards["foot_clearance"].params["asset_cfg"].site_names = site_names
   cfg.rewards["foot_slip"].params["asset_cfg"].site_names = site_names
 
   cfg.terminations["illegal_contact"] = TerminationTermCfg(

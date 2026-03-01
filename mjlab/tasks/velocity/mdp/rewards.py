@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import torch
-
+import pdb
 from mjlab.entity import Entity
 from mjlab.managers.reward_manager import RewardTermCfg
 from mjlab.managers.scene_entity_config import SceneEntityCfg
@@ -19,7 +19,8 @@ if TYPE_CHECKING:
 
 _DEFAULT_ASSET_CFG = SceneEntityCfg("robot")
 
-
+#NOTE: root_link_lin_vel_b is for vel in base frame, (commands are in this frame)
+#NOTE: root_link_lin_vel_w is for vel in world frame 
 def track_linear_velocity(
   env: ManagerBasedRlEnv,
   command_name: str,
@@ -76,6 +77,39 @@ def track_angular_velocity(
   print(f"angular: {reward}")
   return reward
 
+def linear_orthogonal(
+  env: ManagerBasedRlEnv,
+  command_name: str,
+  asset_cfg: SceneEntityCfg = _DEFAULT_ASSET_CFG,
+)-> torch.Tensor:
+  """
+  Penalizes the velocity orthogonal to the target vel
+  """
+  asset: Entity = env.scene[asset_cfg.name]
+  command = env.command_manager.get_command(command_name)
+  actual = asset.data.root_link_lin_vel_b
+  # Use only XY plane
+  v = actual[:, :2]         # (batch, 2)
+  v_des = command[:, :2]    # (batch, 2)
+  v_des_norm = torch.norm(v_des, dim=1, keepdim=True)
+  v_des_unit = v_des / (v_des_norm + 1e-6)
+  proj_scalar = torch.sum(v * v_des_unit, dim=1, keepdim=True)
+  v_proj = proj_scalar * v_des_unit
+  v_orth = v - v_proj
+  x = torch.sum(v_orth ** 2, dim=1)
+  return torch.exp(-3.0 * x)
+
+def body_motion_reward(
+  env: ManagerBasedRlEnv,
+  asset_cfg: SceneEntityCfg = _DEFAULT_ASSET_CFG,
+)-> torch.Tensor:
+  asset: Entity = env.scene[asset_cfg.name]
+  ang_actual = asset.data.root_com_ang_vel_b
+  wx = ang_actual[:,0]
+  wy = ang_actual[:,1]
+  vz = asset.data.root_com_lin_vel_b[:,2]
+  return torch.Tensor(-1.25*(torch.square(vz)) -0.4*(torch.abs(wx))-0.4*(torch.abs(wy)))
+  
 
 def flat_orientation(
   env: ManagerBasedRlEnv,
@@ -165,6 +199,34 @@ def feet_air_time(
       reward *= scale
   return reward
 
+def feet_terrain_clearence(env: ManagerBasedRlEnv
+    ) -> torch.Tensor:
+    robot = env.scene.entities["robot"]
+    hit_pos = env.scene.sensors["height_scanner"].data.hit_pos_w
+
+    foot_ids = [
+    robot.site_names.index("FL"),
+    robot.site_names.index("FR"),
+    robot.site_names.index("RL"),
+    robot.site_names.index("RR"),
+  ]
+    # pdb.set_trace()
+    foot_pos = robot.data.site_pos_w[:, foot_ids, :]
+    foot_z = foot_pos[:,:,2]
+    radius = 0.2
+    diff = hit_pos[:, None, :, :2] - foot_pos[:, :, None, :2]
+    dist = torch.norm(diff, dim=-1)
+    mask = dist < radius
+    heights = hit_pos[..., 2]  # (E, 121)
+    heights = heights.unsqueeze(1).expand(-1,4,-1)
+    masked_heights = torch.where(mask,heights, torch.full_like(heights, -1e6))
+    max_height = masked_heights.max(dim=2).values 
+    print(max_height.shape)
+    reward_mask = max_height - foot_z < -0.2
+    reward = reward_mask * (-1)
+    average_reward = reward.sum(dim=1)
+    print(average_reward)
+    return average_reward
 
 def feet_clearance(
   env: ManagerBasedRlEnv,

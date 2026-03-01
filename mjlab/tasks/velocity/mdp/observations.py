@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import torch
+import pdb
 
 from mjlab.entity import Entity
 from mjlab.managers.scene_entity_config import SceneEntityCfg
@@ -45,8 +46,32 @@ def foot_contact_forces(env: ManagerBasedRlEnv, sensor_name: str) -> torch.Tenso
 def height_map(env: ManagerBasedRlEnv, sensor_name: str)-> torch.Tensor:
   sensor: RayCastSensor = env.scene[sensor_name]
   sensor_data = sensor.data
-  assert sensor_data.normals_w is not None
-  map = sensor_data.normals_w.flatten(start_dim=1)
+  robot = env.scene.entities["robot"]
+  hit_pos = sensor_data.hit_pos_w
+  foot_ids = [
+    robot.site_names.index("FL"),
+    robot.site_names.index("FR"),
+    robot.site_names.index("RL"),
+    robot.site_names.index("RR"),
+  ]
+  # pdb.set_trace()
+  foot_pos = robot.data.site_pos_w[:, foot_ids, :]
+  radius = 0.2
+
+  # --- Proper Broadcasting ---
+  # hit_pos → (E, 1, 121, 2)
+  # foot_pos → (E, 4, 1, 2)
+  diff = hit_pos[:, None, :, :2] - foot_pos[:, :, None, :2]
+  # shape: (E, 4, 121, 2)
+  dist = torch.norm(diff, dim=-1)
+  # shape: (E, 4, 121)
+  mask = dist < radius
+  # Use HEIGHTS, not normals
+  heights = hit_pos[..., 2]  # (E, 121)
+  # Expand heights to match mask
+  heights = heights[:, None, :]  # (E, 1, 121)
+  # Compute mean height per foot
+  map = heights*mask
   return torch.sign(map) *  torch.log1p(torch.abs(map))
 
 def external_forces(env: ManagerBasedRlEnv) -> torch.Tensor:

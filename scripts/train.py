@@ -26,8 +26,8 @@ class TrainConfig:
     env: ManagerBasedRlEnvCfg
     agent: RslRlOnPolicyRunnerCfg
     motion_file: str | None = None
-    video: bool = False
-    video_length: int = 200
+    video: bool = True
+    video_length: int = 200 
     video_interval: int = 2000
     enable_nan_guard: bool = False
     torchrunx_log_dir: str | None = None
