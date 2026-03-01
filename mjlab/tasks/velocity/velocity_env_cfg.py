@@ -313,7 +313,7 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
         ),
         "feet_terrain_clearence": RewardTermCfg(
             func=mdp.feet_terrain_clearence,
-            weight= 1.0,
+            weight= 0.003,
         ),
         "foot_slip": RewardTermCfg(
             func=mdp.feet_slip,
