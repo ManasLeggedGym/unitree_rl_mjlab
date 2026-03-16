@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import torch
-import ipdb
 
 from mjlab.entity import Entity
 from mjlab.managers.reward_manager import RewardTermCfg
