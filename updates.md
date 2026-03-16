@@ -1,6 +1,9 @@
 ## Todos
 - [] Look up the encoder arch in the supplemnentry section and change the teacher model - @asavari [23-02-26]
+- [] fix the IKM border values issue - @chirag -[17-03-26]
+- [] add the FGT to all legs and IKM to angles
 - [x] Are the rewards different - If yes, modify. - @chirag and @asavari - [23-02-26]
+- [x] impliment FTG and analytical IKM (minimal)
 - [] Check the current OnPoicyRunner implementation - @Om @Mrigaank - [23-02-26 EOD]
 - [] Sort the observations for their respective target networks - Sm prop. goes to actor, some goes to critic etc. -@om @mrigaank [23-02-26]
 - [] Go Through the rest of this updates.md - Use ipdb or pdb to inspect - @all [ideally parallely]
