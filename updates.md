@@ -6,6 +6,7 @@
 - [] Any other optimizations? - Training is slow.
 
 ## Todos
+<<<<<<< HEAD
 - [x] Look up the encoder arch in the supplemnentry section and change the teacher model - @asavari [23-02-26]
 - [x] Are the rewards different - If yes, modify. - @chirag and @asavari - [23-02-26]
 - [x] Check the current OnPoicyRunner implementation - @Om @Mrigaank - [23-02-26 EOD]
@@ -14,6 +15,19 @@
 - [ ] Train and check - [24-02-26 HD]
 - [-] Document all the work done so far - @all
 - [x] Have individual heightmaps surrounding each leg - instead of a global grid.
+=======
+- [] Look up the encoder arch in the supplemnentry section and change the teacher model - @asavari [23-02-26]
+- [] fix the IKM border values issue - @chirag -[17-03-26]
+- [] add the FGT to all legs and IKM to angles
+- [x] Are the rewards different - If yes, modify. - @chirag and @asavari - [23-02-26]
+- [x] impliment FTG and analytical IKM (minimal)
+- [] Check the current OnPoicyRunner implementation - @Om @Mrigaank - [23-02-26 EOD]
+- [] Sort the observations for their respective target networks - Sm prop. goes to actor, some goes to critic etc. -@om @mrigaank [23-02-26]
+- [] Go Through the rest of this updates.md - Use ipdb or pdb to inspect - @all [ideally parallely]
+- [] Train and check - [24-02-26 HD]
+- [] Document all the work done so far - @all
+- [] Have individual heightmaps surrounding each leg - instead of a global grid.
+>>>>>>> b3a09699253751f9da440ea2a865dac8a8ed2465
 ## Heat Check after the above have been setup
 - [] Inspect the observation space that goes as input to the network - Data type and Shape
 - [] Are Critic/Actor Networks receiving the right inputs?

@@ -145,6 +145,12 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
             actuator_names=(".*",),
             scale=0.5,  # Override per-robot.
             use_default_offset=True,
+        ),
+        "joint_phase": JointPhaseActionCfg( #TODO: implement JointPhaseActionCfg
+            entity_name="robot",
+            actuator_names=(".*",),
+            scale=0.5,  # Override per-robot.
+            use_default_offset=True,
         )
     }
 
